@@ -1,0 +1,94 @@
+{
+    "10-K": [
+        {
+            "itemname": "Item1A",
+            "txt": [
+
+                {
+                    "start": "_*ITEM_1A",
+                    "end": "\n_*ITEM 2.*?\n"
+                }
+            ],
+            "html": [
+                {
+                    "start": "\n.{,10}Item_*1A.{,10}Risk_Factors",
+                    "end": "\n.{,10}Item_*2.{,10}Properties"
+                }
+            ]
+        },
+        {
+            "itemname": "Item7",
+            "txt": [
+
+                {
+                    "start": "_*ITEM_7",
+                    "end": "\n_*ITEM 8.*?\n"
+                }
+            ],
+            "html": [
+                {
+                    "start": "(Management.{,10}_*Discussion_*and_*Analysis|Management.{,10}_*Discussion|Discussion_*and_*Analysis_*of_*Financial_*Condition)",
+                    "end": "\n.{,10}Financial_*(Statements$|Statements_*and_*Supplementary)"
+                }
+            ]
+        }
+
+    
+    ],
+
+    "EX-13": [
+        {
+            "itemname": "Exhibit13",
+            "txt": [
+                {
+                    "start": "((Management.{,10}_*Discussion_*and_*Analysis|Management.{,10}_*Discussion|Discussion_*and_*Analysis_*of_*Financial_*Condition)|Financial Review)",
+                    "end": "^.{,10}(Financial_*(Statements$|Statements_*and_*Supplementary)|Consolidated_*Statement_*of_*Earnings|Significant_*Accounting_*Policies_*and_*Estimates$|Cautionary_*Language_*Concerning_*Forward)"
+                },
+                {
+                    "start": "<DOCUMENT>.{,20}<TYPE>EX-13",
+                    "end": " *</DOCUMENT>"
+                }
+            ],
+            "html": [
+                {
+                    "start": "((Management.{,10}_*Discussion_*and_*Analysis|Management.{,10}_*Discussion|Discussion_*and_*Analysis_*of_*Financial_*Condition)|Financial Review)",
+                    "end": "\n.{,10}(Financial_*(Statements$|Statements_*and_*Supplementary)|Consolidated_*Statement_*of_*Earnings|Significant_*Accounting_*Policies_*and_*Estimates$|Cautionary_*Language_*Concerning_*Forward)"
+                }
+            ]
+        }
+    ],
+
+    "10-Q": [
+        {
+            "itemname": "Item1A",
+            "txt": [
+
+                {
+                    "start": "_*ITEM_1A",
+                    "end": "\n_*ITEM 2.*?\n"
+                }
+            ],
+            "html": [
+                {
+                    "start": "\n.{,10}Item_*1A.{,10}Risk_Factors",
+                    "end": "\n.{,10}Item_*2.{,10}Unregistered"
+                }
+            ]
+        },
+        {
+            "itemname": "Item2",
+            "txt": [
+                {
+                    "start": "_*ITEM_2",
+                    "end": "\n_*(?:ITEM_3|PART_II).*?\n"
+                }
+            ],
+            "html": [
+                {
+                    "start": "(Management.{,10}_*Discussion_*and_*Analysis|Management.{,10}_*Discussion|Discussion_*and_*Analysis_*of_*Financial_*Condition)",
+                    "end": "\n.{,10}(Quantitative_*and_*Qualitative_*Disclosures|Item.{,5}4.{,5}Controls_*and_*Procedures)"
+                }
+            ]
+        }
+    ]
+}
