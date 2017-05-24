@@ -1,5 +1,9 @@
 """
-[License Boilerplate here: Alex copyright, license etc.]
+    secedgartext: extract text from SEC corporate filings
+    Copyright (C) 2017  Alexander Ions
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 # Originally adapted from "SEC-Edgar" package code
 import os
@@ -48,7 +52,7 @@ class EdgarCrawler(object):
             # of the parts of the filing
             URLbase = re.sub('-index.htm.?','',k)
             filing_url = URLbase + ".txt"
-            doc_description = str(company_description) # + "_" + str(edgar_search_string)
+            doc_description = str(company_description).strip()
             filings_list.append([k, filing_url, doc_description])
 
         if filings_links:
@@ -158,9 +162,10 @@ class EdgarCrawler(object):
                     document_type = "document_TYPE_not_tagged"
                     logger.error("form <TYPE> not given in form?: " + base_url)
 
-                local_path = self.storage_folder + "/" + filing_info[2] + '_' + \
+                local_path = os.path.join(self.storage_folder,
+                        "/" + filing_info[2] + '_' + \
                         filing_metadata.sec_cik + "_" + document_type + "_" + \
-                        filing_metadata.sec_period_of_report
+                        filing_metadata.sec_period_of_report)
                 doc_metadata.document_type = document_type
                 # doc_metadata.form_type_internal = form_string
                 doc_metadata.document_group = document_group
