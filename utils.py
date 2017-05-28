@@ -15,6 +15,7 @@ from os import path
 import datetime
 import time
 import json
+import sqlite3
 from copy import copy
 
 
@@ -23,14 +24,14 @@ from copy import copy
 companies_file_location = ''
 single_company = ''
 script_dir = path.dirname(__file__)
-# / home / ai / projects_data / text_analysis / data - -company = DOW - -start = 20131231 - -end = 20141231
 parser = argparse.ArgumentParser()
 parser.add_argument('--storage')
 parser.add_argument('--company')
 parser.add_argument('--companies_list')
-parser.add_argument('--filings')  #, default='10-K,10-Q'
+parser.add_argument('--filings')
 parser.add_argument('--start')
 parser.add_argument('--end')
+parser.add_argument('--report_period')
 args = parser.parse_args()
 args.storage = args.storage or \
     path.join(script_dir, 'data')
@@ -47,6 +48,7 @@ args.filings = args.filings or \
     input('Enter filings search text (default: 10-K,10-Q): ') or \
     '10-K,10-Q'
 args.filings = re.split(',', args.filings)          # ['10-K','10-Q']
+
 if '10-K' in args.filings:
     search_window_days = 365
 else:
@@ -63,6 +65,12 @@ args.end = int(args.end or \
     input('Enter end date for filings search (default: ' +
           ccyymmdd_default_end + '): ') or \
             ccyymmdd_default_end)
+date_search_string = str(
+    args.report_period or
+    input('Enter filing report period ccyy, ccyymm etc. (default: all periods): ') or
+    '.*')
+
+
 
 """Set up logging
 """
@@ -100,6 +108,43 @@ logger.info('=' * 65)
 
 
 
+"""Set up the metadata database
+"""
+conn = sqlite3.connect(path.join(args.storage, 'metadata.sqlite3'))
+c = conn.cursor()
+c.execute("""CREATE TABLE IF NOT EXISTS metadata (
+    id integer PRIMARY KEY,
+    batch_number integer NOT NULL,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    sec_cik text NOT NULL,
+    company_description text,
+    sec_company_name text,
+    sec_form_header text,
+    sec_period_of_report integer,
+    sec_index_url text,
+    sec_url text,
+    metadata_file_name text,
+    document_group text,
+    section_name text,
+    section_n_characters integer,
+    extraction_method text,
+    output_file text,
+    start_line text,
+    end_line text,
+    time_elapsed real)
+    """)
+conn.commit()
+c.execute('SELECT max(batch_number) FROM metadata')
+query_result =c.fetchone()
+if query_result and query_result[0]:
+    batch_number = query_result[0] + 1
+else:
+    batch_number = 1
+conn.close()
+
+
+
+
 """Create search_terms_regex, which stores the patterns that we
 use for identifying sections in the EDGAR documents
 """
@@ -115,7 +160,7 @@ with open (path.join(script_dir, 'document_group_section_regex.json'), 'r') as \
                     for startend in ['start','end']:
                         regex_string = search_terms[filing][idx][format] \
                             [idx2][startend]
-                        regex_string = regex_string.replace('_','\\s')
+                        regex_string = regex_string.replace('_','\\s{,5}')
                         regex_string = regex_string.replace('\n', '\\n')
                         search_terms_regex[filing][idx][format] \
                             [idx2][startend] = regex_string

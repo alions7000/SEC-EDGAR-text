@@ -59,7 +59,7 @@ class HtmlDocument(Document):
 
         # for some old, simplistic documents lacking a proper HTML tree,
         # put in <br> tags artificially to help with parsing paragraphs, ensures
-        # that text headers get properly identified
+        # that section headers get properly identified
         if len(html_text) / len(soup.find_all()) > 500:
             html_text = re.sub(r'\n\n', r'<br>', html_text,
                                flags=re.IGNORECASE)
@@ -89,14 +89,15 @@ class HtmlDocument(Document):
         is_in_a_paragraph = True
         while not (ec is None):
             if is_line_break(ec) or ec.next_element is None:
-                # end of a paragraph has been identified...
+                # end of a paragraph; insert line-break (double for readability)
                 if is_in_a_paragraph:
                     is_in_a_paragraph = False
                     all_paras.append(paragraph_string)
                     document_string = document_string + '\n\n' + paragraph_string
             else:
                 # continuation of the current paragraph
-                if isinstance(ec, NavigableString) and not isinstance(ec, Comment):
+                if isinstance(ec, NavigableString) and not \
+                        isinstance(ec, Comment):
                     # remove line breaks and other whitespace at the ends,
                     # and in the middle, of the string
                     ecs = re.sub(r'\s+', ' ',
@@ -128,9 +129,12 @@ class HtmlDocument(Document):
             # so that we always return just one object, not a tuple of groups
             # st = super().search_terms_pattern_to_regex()
             # st = Reader.search_terms_pattern_to_regex(st)
-            item_search = re.findall('(' + st['start']+'.*?'+ st['end']+')',
+            item_search = re.findall(st['start']+'.*?'+ st['end'],
                                      self.plaintext,
                                      re.DOTALL | re.IGNORECASE)
+            # item_search = re.findall('(' + st['start']+'.*?'+ st['end']+')',
+            #                          self.plaintext,
+            #                          re.DOTALL | re.IGNORECASE)
             if item_search:
                 longest_text_length = 0
                 for s in item_search:
@@ -150,9 +154,11 @@ class HtmlDocument(Document):
                 break
         extraction_method = 'html_document'
         if not text_extract:
-            warnings.append('Extraction did not work for text file')
-            logger.warning('No excerpt produced for text file')
+            warnings.append('Extraction did not work for HTML file')
             extraction_method = 'html_document: failed'
+        else:
+            text_extract = re.sub('\n\s{,5}Table of Contents\n', '',
+                                  text_extract, flags=re.IGNORECASE)
 
         return text_extract, extraction_method, start_text, end_text, warnings
 
@@ -192,7 +198,13 @@ def is_line_break(e):
     is_block_tag = e.name != None and e.name in ['p', 'div', 'br', 'hr', 'tr',
                                                  'table', 'form', 'h1', 'h2',
                                                  'h3', 'h4', 'h5', 'h6']
-    is_block_tag = is_block_tag and e.parent.name != 'td'
+    # handle block tags inside tables: if the apparent block formatting is
+    # enclosed in a table cell <td> tags, and if there are no other block
+    # elements within the <td> cell (it's a singleton, then it will not
+    # necessarily appear on a new line so we don't treat it as a line break
+    if is_block_tag and e.parent.name == 'td':
+        if len(e.parent.findChildren(name=e.name)) == 1:
+            is_block_tag = False
     # inspect the style attribute of element e (if any) to see if it has
     # block style, which will appear as a line break in the document
     if hasattr(e, 'attrs') and 'style' in e.attrs:

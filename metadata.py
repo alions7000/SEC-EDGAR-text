@@ -9,8 +9,13 @@ import json
 import re
 import requests
 from bs4 import BeautifulSoup, Tag, NavigableString
+from os import path
+import sqlite3
 
 from utils import logger
+from utils import args
+from utils import batch_number
+
 
 class Metadata(object):
     def __init__(self, index_url=None):
@@ -27,13 +32,13 @@ class Metadata(object):
         self.metadata_file_name = ''
         self.original_file_name = ''
         self.original_file_size = ''
-        # self.date = ''
-        # self.form_type_internal = ''
         self.document_group = ''
         self.section_name = ''
+        self.section_n_characters = None
         self.endpoints = []
         self.extraction_method = ''
         self.warnings = []
+        self.company_description = ''
         self.output_file = None
         self.time_elapsed = None
 
@@ -109,6 +114,48 @@ class Metadata(object):
             json_output.write(bytes(excerpt_as_json, "utf-8").
                               decode("unicode_escape"))
 
+
+    def save_to_db(self):
+        """Append metadata to sqlite database
+
+        """
+
+        conn = sqlite3.connect(path.join(args.storage, 'metadata.sqlite3'))
+        c = conn.cursor()
+        sql_insert = """INSERT INTO metadata (
+            batch_number,
+            sec_cik,
+            company_description,
+            sec_company_name,
+            sec_form_header,
+            sec_period_of_report,
+            sec_index_url,
+            sec_url,
+            metadata_file_name,
+            document_group,
+            section_name,
+            section_n_characters,
+            extraction_method,
+            output_file,
+            start_line,
+            end_line,
+            time_elapsed) VALUES
+            """ + "('" + "', '".join([str(batch_number), self.sec_cik,
+                       self.company_description, self.sec_company_name,
+                       self.sec_form_header, self.sec_period_of_report,
+                       self.sec_index_url, self.sec_url,
+                       self.metadata_file_name, self.document_group,
+                       self.section_name, str(self.section_n_characters),
+                       self.extraction_method,
+                       str(self.output_file),
+                       re.sub("[\'\"]","", self.endpoints[0]),
+                       re.sub("[\'\"]","", self.endpoints[1]),
+                       str(self.time_elapsed)]) + "')"
+        c.execute(sql_insert)
+        conn.commit()
+        conn.close()
+
+
 def load_from_json(file_path):
     metadata = Metadata()
     with open(file_path, 'r') as json_file:
@@ -117,6 +164,7 @@ def load_from_json(file_path):
             data = json.loads(json_file.read())
             metadata.sec_cik = data['sec_cik']
             metadata.sec_company_name = data['sec_company_name']
+            metadata.company_description = data['company_description']
             metadata.document_type = data['document_type']
             metadata.sec_form_header = data['sec_form_header']
             metadata.sec_period_of_report = data['sec_period_of_report']
@@ -128,10 +176,9 @@ def load_from_json(file_path):
             metadata.metadata_file_name = data['metadata_file_name']
             metadata.original_file_name = data['original_file_name']
             metadata.original_file_size = data['original_file_size']
-            # metadata.date = data['date']
-            # metadata.form_type_internal = data['form_type_internal']
             metadata.document_group = data['form_group']
             metadata.section_name = data['section_name']
+            metadata.section_n_characters = data['section_n_characters']
             metadata.endpoints = data['endpoints']
             metadata.extraction_method = data['extraction_method']
             metadata.warnings = data['warnings']

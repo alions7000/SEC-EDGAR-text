@@ -54,7 +54,6 @@ class TextDocument(Document):
             text_extract = remove_table_lines(text_extract)
         else:
             warnings.append('Extraction did not work for text file')
-            logger.warning('No excerpt produced for text file')
             extraction_method = 'text_document: failed'
 
         return text_extract, extraction_method, start_text, end_text, warnings

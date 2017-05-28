@@ -24,7 +24,7 @@ class EdgarCrawler(object):
         self.storage_folder = storage_folder
 
     def download_filings(self, company_description, edgar_search_string,
-                         filing_search_string,
+                         filing_search_string, date_search_string,
                          start_date, end_date,
                          do_save_full_document, count=9999):
         """Build a list of all filings of a certain type, within a date range.
@@ -41,34 +41,34 @@ class EdgarCrawler(object):
         filings_links = self.download_filings_links(edgar_search_string,
                                                     company_description,
                                                     filing_search_string,
+                                                    date_search_string,
                                                     start_date, end_date, count)
 
         filings_list = []
 
         logger.info("Identified " + str(len(filings_links)) +
                     " filings, gathering SEC metadata and document links...")
-        for k in filings_links:
+        for i, index_url in enumerate(filings_links):
             # Get the URL for the (text-format) document which packages all
             # of the parts of the filing
-            URLbase = re.sub('-index.htm.?','',k)
-            filing_url = URLbase + ".txt"
-            doc_description = str(company_description).strip()
-            filings_list.append([k, filing_url, doc_description])
-
-        if filings_links:
-            for i, filing_info in enumerate(filings_list):
-                logger.info("Downloading filing %i / %i from %s", i + 1,
-                            len(filings_list), filing_info[2])
-                self.download_filing(filing_info, do_save_full_document)
-            logger.debug("Finished attempting to download all the %s forms for %s",
-                         filing_search_string, company_description)
-        else:
-            logger.warning("No filings found")
+            base_url = re.sub('-index.htm.?','',index_url) + ".txt"
+            filings_list.append([index_url, base_url, company_description])
+            filing_metadata = Metadata(index_url)
+            if re.search(date_search_string,
+                         str(filing_metadata.sec_period_of_report)):
+                filing_metadata.sec_index_url = index_url
+                filing_metadata.sec_url = base_url
+                filing_metadata.company_description = company_description
+                logger.info("Downloading filing %i from %s", i + 1,
+                            company_description)
+                self.download_filing(filing_metadata, do_save_full_document)
+        logger.debug("Finished attempting to download all the %s forms for %s",
+                     filing_search_string, company_description)
 
 
 
     def download_filings_links(self, edgar_search_string, company_description,
-                               filing_search_string,
+                               filing_search_string, date_search_string,
                                start_date, end_date, count):
         """[docstring here]
         :param edgar_search_string: 10-digit integer CIK code, or ticker
@@ -90,7 +90,7 @@ class EdgarCrawler(object):
         logger.info(
             "Query EDGAR database for " + filing_search_string + ", Search: " +
             str(edgar_search_string) + " (" + company_description + ")")
-        logger.debug("URL: " + base_url)
+        logger.debug("EDGAR search URL: " + base_url)
         logger.info('-' * 100)
         r = requests.get(base_url)
         data = r.text
@@ -103,7 +103,7 @@ class EdgarCrawler(object):
         return linkList
 
 
-    def download_filing(self, filing_info, do_save_full_document):
+    def download_filing(self, filing_metadata, do_save_full_document):
         """
         Download filing, extract relevant sections.
 
@@ -112,17 +112,14 @@ class EdgarCrawler(object):
         :param: doc_info: contains URL for the full filing submission, and
         other EDGAR index metadata
         """
-
-        index_url = filing_info[0]
-        base_url = filing_info[1]
-        filing_metadata = Metadata(index_url)
-        logger.debug("URL: " + base_url)
-        logger.info("filing: %s, %s, period: %s",
+        base_url = filing_metadata.sec_url
+        company_description = filing_metadata.company_description
+        logger.debug("Filing index page: " + base_url)
+        logger.info("filing: %s, %s, period: %s (%s)",
                     filing_metadata.sec_company_name,
                     filing_metadata.sec_form_header,
-                    filing_metadata.sec_period_of_report)
-        filing_metadata.sec_index_url = index_url
-        filing_metadata.sec_url = base_url
+                    filing_metadata.sec_period_of_report,
+                    filing_metadata.metadata_file_name)
         try:
             r = requests.get(base_url)
             filing_text = r.text
@@ -131,7 +128,7 @@ class EdgarCrawler(object):
             filing_text = ''
             logger.warning('EdgarCrawler: Failed to download file %s',
                            base_url)
-            logger.warning('(%s, %s, %s)', filing_info[2],
+            logger.warning('(%s, %s, %s)', company_description,
                            filing_metadata.sec_form_header,
                            filing_metadata.sec_company_name)
         filing_metadata.add_data_from_filing_text(filing_text[0:10000])
@@ -163,7 +160,7 @@ class EdgarCrawler(object):
                     logger.error("form <TYPE> not given in form?: " + base_url)
 
                 local_path = os.path.join(self.storage_folder,
-                        "/" + filing_info[2] + '_' + \
+                        company_description + '_' + \
                         filing_metadata.sec_cik + "_" + document_type + "_" + \
                         filing_metadata.sec_period_of_report)
                 doc_metadata.document_type = document_type

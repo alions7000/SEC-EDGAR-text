@@ -9,7 +9,7 @@ import re
 
 from download import EdgarCrawler
 from utils import logger, args
-from utils import companies_file_location, single_company
+from utils import companies_file_location, single_company, date_search_string
 
 
 
@@ -67,24 +67,24 @@ class Downloader(object):
         else:
             logger.info("Saving extracts (if successful) only. "
                         "Not saving source documents locally.")
-        logger.warning("SEC filing date range: %i to %i", start_date, end_date)
+        logger.info("SEC filing date range: %i to %i", start_date, end_date)
 
-        logger.warning("Beginning download from filtered list of " +
-                       str(len(all_companies)) +
-                       " companies from total list of " +
+        logger.info("Beginning download from list of " +
                        str(len(all_companies)) + " companies.")
 
         for c, company_keys in enumerate(all_companies):
             edgar_search_string = str(company_keys[0])
-            company_description = str(company_keys[1])
+            company_description = str(company_keys[1]).strip()
             company_description = re.sub('/','', company_description)
 
             logger.info('Begin downloading company: ' + str(c + 1) + ' / ' +
                         str(len(all_companies)))
-            for filing_type in args.filings:
+            for filing_search_string in args.filings:
                 seccrawler.download_filings(company_description,
                                             edgar_search_string,
-                                            filing_type, str(start_date),
+                                            filing_search_string,
+                                            date_search_string,
+                                            str(start_date),
                                             str(end_date), do_save_full_document)
         logger.warning("SUCCESS: Finished downloading " + str(c+1) +
                        " companies selected from list of " +
