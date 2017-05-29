@@ -116,23 +116,19 @@
             ],
             "html": [
                 {
-                    "start": "\n_(?:PART.{,40})?Item_2.{,10}Management",
+                    "start": "\n_(?:PART.{,40})?Items?_2.{,15}Management",
                     "end": "\n_(?:PART.{,40})?(?:Item_[3-9]|Quantitative_and_Qualitative|Controls_and_Procedures|OTHER_INFORMATION|Legal_Proceedings).{,99}?\n"
                 },
                 {
-                    "start": "\n_(?:PART.{,40})?(?:Item_2{,10})?Management.{,5}Discussion_and_Analysis",
+                    "start": "\n_(?:PART.{,40})?(?:Items?_2.{,15})?Management.{,5}Discussion_and_Analysis",
                     "end": "\n_(?:PART.{,40})?(?:Item_[3-9]|Quantitative_and_Qualitative|Controls_and_Procedures|OTHER_INFORMATION|Legal_Proceedings).{,99}?\n"
                 },
                 {
-                    "start": "\n_Disclosure_Regarding_Forward",
+                    "start": "\n_(?:Financial_Review|Disclosure_Regarding_Forward|Executive_Overview|Business_Overview|Earnings_Performance).{,49}\n",
                     "end": "\n_(?:PART.{,40})?(?:Item_[3-9]|Quantitative_and_Qualitative|Controls_and_Procedures|OTHER_INFORMATION|Legal_Proceedings).{,99}?\n"
                 },
                 {
-                    "start": "\n_(?:Executive_Overview|Business_Overview)",
-                    "end": "\n_(?:PART.{,40})?(?:Item_[3-9]|Quantitative_and_Qualitative|Controls_and_Procedures|OTHER_INFORMATION|Legal_Proceedings).{,99}?\n"
-                },
-                {
-                    "start": "\n_(?:PART.{,40})?Item_2",
+                    "start": "\n_(?:PART.{,40})?Items?_2(?!.{,10}Unregistered_Sales)",
                     "end": "\n_(?:PART.{,40})?(?:Item_[3-9]|Quantitative_and_Qualitative|Controls_and_Procedures|OTHER_INFORMATION|Legal_Proceedings).{,99}?\n"
                 }
             ]

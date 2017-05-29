@@ -144,11 +144,9 @@ class HtmlDocument(Document):
                 longest_text_length = 0
                 for s in item_search:
                     if isinstance(s, tuple):
-                        # If use of multiple regex groups has caused more
-                        # than one match, then s is returned as a tuple ,
-                        # so we have to instead take the first (encompassing)
-                        # group as our found string
-                        s = s[0]
+                        # If incorrect use of multiple regex groups has caused
+                        # more than one match, then s is returned as a tuple
+                        logger.error("Groups found in Regex, please correct")
                     if len(s) > longest_text_length:
                         text_extract = s.strip()
                         longest_text_length = len(s)
