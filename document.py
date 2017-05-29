@@ -47,9 +47,6 @@ class Document(object):
             search_pairs = section_search_terms[self.document_type()]
             text_extract, extraction_method, start_text, end_text, warnings = \
                 self.extract_section(search_pairs)
-            if not text_extract:
-                logger.warning(': '.join(['No excerpt located for ',
-                                         section_name, metadata.sec_index_url]))
             time_elapsed = time.clock() - start_time
             metadata.extraction_method = self.document_type()
             metadata.section_name = section_name
@@ -65,7 +62,8 @@ class Document(object):
                 metadata.section_n_characters = len(text_extract)
                 with open(txt_output_path, 'w', encoding='utf-8') as txt_output:
                     txt_output.write(text_extract)
-                logger.debug('SUCCESS: Saved excerpt file: %s', txt_output_path)
+                logger.debug(': '.join(['SUCCESS Saved file for',
+                                         section_name, txt_output_path]))
                 try:
                     os.remove(failure_metadata_output_path)
                 except:
@@ -74,6 +72,8 @@ class Document(object):
                 metadata.metadata_file_name = metadata_path
                 metadata.save_to_json(metadata_path)
             else:
+                logger.warning(': '.join(['No excerpt located for ',
+                                         section_name, metadata.sec_index_url]))
                 try:
                     os.remove(metadata_path)
                 except:

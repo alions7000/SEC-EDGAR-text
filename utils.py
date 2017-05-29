@@ -65,10 +65,13 @@ args.end = int(args.end or \
     input('Enter end date for filings search (default: ' +
           ccyymmdd_default_end + '): ') or \
             ccyymmdd_default_end)
-date_search_string = str(
-    args.report_period or
-    input('Enter filing report period ccyy, ccyymm etc. (default: all periods): ') or
-    '.*')
+if str(args.report_period).lower() == 'all':
+    date_search_string = '.*'
+else:
+    date_search_string = str(
+        args.report_period or
+        input('Enter filing report period ccyy, ccyymm etc. (default: all periods): ') or
+        '.*')
 
 
 
@@ -152,6 +155,9 @@ with open (path.join(script_dir, 'document_group_section_regex.json'), 'r') as \
         f:
     json_text = f.read()
     search_terms = json.loads(json_text)
+    if not search_terms:
+        logger.error('Search terms file is missing or corrupted: ' +
+              f.name)
     search_terms_regex = copy(search_terms)
     for filing in search_terms:
         for idx, section in enumerate(search_terms[filing]):

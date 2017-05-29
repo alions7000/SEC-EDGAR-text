@@ -3,37 +3,53 @@
         {
             "itemname": "Item1A",
             "txt": [
-
                 {
-                    "start": "\n_(?:PART.{,40})?ITEM_1A.{,10}Risk_Factors",
-                    "end": "\n_ITEM_2.{,10}Properties.*?\n"
+                    "start": "\n\\s{,40}(?:PART.{,40})?Item_1.{,10}Risk_Factors",
+                    "end": "\n\\s{,40}(?:PART.{,40})?ITEM_2.{,10}Properties.*?\n"
+                },
+                {
+                    "start": "\n\\s{,40}(?:PART.{,40})?Item_1.{,10}Risk_Factors",
+                    "end": "\n\\s{,40}(?:PART.{,40})?ITEM_[2-9].*?\n"
                 }
             ],
             "html": [
                 {
-                    "start": "\n_(?:PART.{,40})?Item_1A.{,10}Risk_Factors",
+                    "start": "\n_(?:PART.{,40})?Item_1.{,10}Risk_Factors",
                     "end": "\n_(?:PART.{,40})?Item_2.{,10}Properties.{,99}?\n"
+                },
+                {
+                    "start": "\n_(?:PART.{,40})?Item_1.{,10}Risk_Factors",
+                    "end": "\n_(?:PART.{,40})?Item_[2-9].{,99}?\n"
+                },
+                {
+                    "start": "\n_(?:PART.{,40})?Item_1\\(?A",
+                    "end": "\n_(?:PART.{,40})?Item_[2-9].{,99}?\n"
                 }
             ]
         },
         {
             "itemname": "Item7",
             "txt": [
-
                 {
-                    "start": "\n_(?:PART.{,40})?ITEM_7 ",
-                    "end": "\n_(?:PART.{,40})?ITEM_8.*?\n"
+                    "start": "\n\\s{,40}(?:PART.{,40})?ITEM_7",
+                    "end": "\n\\s{,40}(?:PART.{,40})?ITEM_8.*?\n"
+                },
+                {
+                    "start": "\n\\s{,40}(?:PART.{,40})?MANAGEMENT.{,5}DISCUSSION_AND",
+                    "end": "\n\\s{,40}(?:PART.{,40})?(?:ITEM_8)?(?:INDEX_TO.{,20})?FINANCIAL_STATEMENTS.*?\n"
                 }
             ],
             "html": [
                 {
                     "start": "\n_(?:PART.{,40})?_Item_7",
                     "end": "\n_(?:PART.{,40})?_Item_8.{,99}?\n"
+                },
+                {
+                    "start": "\n(?:PART.{,40})?MANAGEMENT.{,5}DISCUSSION_AND",
+                    "end": "\n(?:PART.{,40})?(?:ITEM_8)?(?:INDEX_TO.{,20})?FINANCIAL_STATEMENTS.{,99}?\n"
                 }
             ]
         }
-
-    
     ],
 
     "EX-13": [
@@ -41,14 +57,18 @@
             "itemname": "Exhibit13",
             "txt": [
                 {
-                    "start": "\n_(?:Management_Discussion|Financial_Review)",
-                    "end": "\n_(?:Financial_Statement|Consolidated_Statement_of_Earnings|Significant_Accounting|Cautionary_Language)"
+                    "start": "\n\\s{,40}Management.{,5}Discussion",
+                    "end": "\n\\s{,40}(?:Financial_Statement|Consolidated_Statements?_of|Significant_Accounting|Cautionary_Language).{,99}?\n"
+                },
+                {
+                    "start": "\n\\s{,40}Financial_Review",
+                    "end": "\n\\s{,40}(?:Financial_Statement|Consolidated_Statements?_of|Significant_Accounting|Cautionary_Language).{,99}?\n"
                 }
             ],
             "html": [
                 {
-                    "start": "\n_(?:Management_Discussion|Financial_Review)",
-                    "end": "\n_(?:Financial_Statement|Consolidated_Statement_of_Earnings|Significant_Accounting|Cautionary_Language).{,99}?\n"
+                    "start": "\n_(?:Management.{,5}Discussion|Financial_Review)",
+                    "end": "\n_(?:Financial_Statement|Consolidated_Statements?_of|Significant_Accounting|Cautionary_Language).{,99}?\n"
                 }
             ]
         }
@@ -58,19 +78,22 @@
         {
             "itemname": "Item1A",
             "txt": [
-
                 {
-                    "start": "\n_(?:PART.{,40})?ITEM_1A",
-                    "end": "\n_(?:PART.{,40})?ITEM 2"
+                    "start": "\n\\s{,40}(?:PART.{,40})?ITEM_1.{,10}Risk_Factors",
+                    "end": "\n\\s{,40}(?:PART.{,40})?ITEM_2"
                 }
             ],
             "html": [
                 {
-                    "start": "\n_(?:PART.{,40})?Item_1A.{,10}Risk_Factors",
+                    "start": "\n_(?:PART.{,40})?Item_1.{,10}Risk_Factors",
                     "end": "\n_(?:PART.{,40})?Item_2.{,10}Unregistered.{,99}?\n"
                 },
                 {
-                    "start": "\n_(?:PART.{,40})?Item_1A.{,10}Risk_Factors",
+                    "start": "\n_(?:PART.{,40})?Item_1.{,10}Risk_Factors",
+                    "end": "\n_(?:PART.{,40})?Item_\\d.{,99}?\n"
+                },
+                {
+                    "start": "\n_(?:PART.{,40})?Item_1\\(?A",
                     "end": "\n_(?:PART.{,40})?Item_\\d.{,99}?\n"
                 }
             ]
@@ -79,13 +102,29 @@
             "itemname": "Item2",
             "txt": [
                 {
-                    "start": "\n_(?:PART.{,40})?ITEM_2.{,10}Management",
-                    "end": "\n_(?:PART.{,40})?(?:ITEM_3|PART_II).*?\n"
+                    "start": "\n\\s{,40}(?:PART.{,40})?ITEM_2.{,10}Management",
+                    "end": "\n\\s{,40}(?:PART.{,40})?(?:ITEM_3|PART_II).*?\n"
+                },
+                {
+                    "start": "\n\\s{,40}(?:PART.{,40})?Management.{,5}Discussion_and",
+                    "end": "\n\\s{,40}(?:PART_II|Item_[3-9]).{,99}?\n"
                 }
             ],
             "html": [
                 {
                     "start": "\n_(?:PART.{,40})?Item_2.{,10}Management",
+                    "end": "\n_(?:PART.{,40})?Item_(?:3|4).{,99}?\n"
+                },
+                {
+                    "start": "\n_Disclosure_Regarding_Forward",
+                    "end": "\n_(?:PART.{,40})?Item_.{,99}?\n"
+                },
+                {
+                    "start": "\n_(?:Executive_Overview|Business_Overview)",
+                    "end": "\n_(?:PART.{,40})?Item_.{,99}?\n"
+                },
+                {
+                    "start": "\n_(?:PART.{,40})?Item_2",
                     "end": "\n_(?:PART.{,40})?Item_(?:3|4).{,99}?\n"
                 }
             ]

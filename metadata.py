@@ -148,8 +148,8 @@ class Metadata(object):
                        self.section_name, str(self.section_n_characters),
                        self.extraction_method,
                        str(self.output_file),
-                       re.sub("[\'\"]","", self.endpoints[0]),
-                       re.sub("[\'\"]","", self.endpoints[1]),
+                       re.sub("[\'\"]","", self.endpoints[0]).strip(),
+                       re.sub("[\'\"]","", self.endpoints[1]).strip(),
                        str(self.time_elapsed)]) + "')"
         c.execute(sql_insert)
         conn.commit()

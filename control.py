@@ -100,6 +100,8 @@ def company_list(text_file_location):
     company_list = list()
     with open(text_file_location, newline='') as f:
         for r in f.readlines():
+            if r[0] =='#' and len(company_list) > 0:
+                break
             if r[0] != '#' and len(r) > 1:
                 r = re.sub('\n', '', r)
                 text_items = re.split('[ ,\t]', r)  # various delimiters allowed

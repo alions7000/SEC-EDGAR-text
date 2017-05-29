@@ -59,8 +59,10 @@ class EdgarCrawler(object):
                 filing_metadata.sec_index_url = index_url
                 filing_metadata.sec_url = base_url
                 filing_metadata.company_description = company_description
-                logger.info("Downloading filing %i from %s", i + 1,
-                            company_description)
+                logger.info("Downloading filing #%i from %s: %s, %s", i + 1,
+                            company_description,
+                            edgar_search_string,
+                            str(filing_metadata.sec_period_of_report))
                 self.download_filing(filing_metadata, do_save_full_document)
         logger.debug("Finished attempting to download all the %s forms for %s",
                      filing_search_string, company_description)
@@ -114,12 +116,11 @@ class EdgarCrawler(object):
         """
         base_url = filing_metadata.sec_url
         company_description = filing_metadata.company_description
-        logger.debug("Filing index page: " + base_url)
-        logger.info("filing: %s, %s, period: %s (%s)",
+        logger.debug("Retrieving: %s, %s, period: %s, index page: %s",
                     filing_metadata.sec_company_name,
                     filing_metadata.sec_form_header,
                     filing_metadata.sec_period_of_report,
-                    filing_metadata.metadata_file_name)
+                    filing_metadata.sec_index_url)
         try:
             r = requests.get(base_url)
             filing_text = r.text
@@ -195,8 +196,6 @@ class EdgarCrawler(object):
                     reader_class = HtmlDocument
                 else:
                     reader_class = TextDocument
-                logger.debug('Attempting to extract sections using: %s',
-                             doc_metadata.metadata_file_name)
                 reader_class(doc_metadata.original_file_name,
                              doc_text).get_excerpt(doc_text, document_group,
                                                    doc_metadata,

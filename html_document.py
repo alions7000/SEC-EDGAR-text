@@ -89,7 +89,8 @@ class HtmlDocument(Document):
         is_in_a_paragraph = True
         while not (ec is None):
             if is_line_break(ec) or ec.next_element is None:
-                # end of a paragraph; insert line-break (double for readability)
+                # end of paragraph tag (does not itself contain
+                # Navigable String): insert double line-break for readability
                 if is_in_a_paragraph:
                     is_in_a_paragraph = False
                     all_paras.append(paragraph_string)
@@ -98,17 +99,21 @@ class HtmlDocument(Document):
                 # continuation of the current paragraph
                 if isinstance(ec, NavigableString) and not \
                         isinstance(ec, Comment):
-                    # remove line breaks and other whitespace at the ends,
-                    # and in the middle, of the string
-                    ecs = re.sub(r'\s+', ' ',
-                                 ec.string.strip())
+                    # # remove redundant line breaks and other whitespace at the
+                    # # ends, and in the middle, of the string
+                    # ecs = re.sub(r'\s+', ' ', ec.string.strip())
+                    ecs = re.sub(r'\s+', ' ', ec.string)
                     if len(ecs) > 0:
                         if not (is_in_a_paragraph):
                             # set up for the start of a new paragraph
                             is_in_a_paragraph = True
                             paragraph_string = ''
-                        paragraph_string = paragraph_string + ' ' + ecs
+                        # paragraph_string = paragraph_string + ' ' + ecs
+                        paragraph_string = paragraph_string + ecs
             ec = ec.next_element
+        # clean up multiple line-breaks
+        document_string = re.sub('\n\s+\n', '\n\n', document_string)
+        document_string = re.sub('\n{3,}', '\n\n', document_string)
         self.plaintext = document_string
 
 
