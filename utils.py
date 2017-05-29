@@ -12,8 +12,9 @@ import sys
 import argparse
 import re
 from os import path
-import datetime
+import socket
 import time
+import datetime
 import json
 import sqlite3
 from copy import copy
@@ -118,7 +119,8 @@ c = conn.cursor()
 c.execute("""CREATE TABLE IF NOT EXISTS metadata (
     id integer PRIMARY KEY,
     batch_number integer NOT NULL,
-    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    batch_start_time datetime NOT NULL,
+    batch_machine_id text,
     sec_cik text NOT NULL,
     company_description text,
     sec_company_name text,
@@ -130,6 +132,7 @@ c.execute("""CREATE TABLE IF NOT EXISTS metadata (
     document_group text,
     section_name text,
     section_n_characters integer,
+    section_end_time datetime,
     extraction_method text,
     output_file text,
     start_line text,
@@ -144,14 +147,15 @@ if query_result and query_result[0]:
 else:
     batch_number = 1
 conn.close()
-
+batch_start_time = datetime.datetime.utcnow()
+batch_machine_id = socket.gethostname()
 
 
 
 """Create search_terms_regex, which stores the patterns that we
 use for identifying sections in the EDGAR documents
 """
-with open (path.join(script_dir, 'document_group_section_regex.json'), 'r') as \
+with open (path.join(script_dir, 'document_group_section_search.json'), 'r') as \
         f:
     json_text = f.read()
     search_terms = json.loads(json_text)

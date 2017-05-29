@@ -1,0 +1,159 @@
+{
+    "10-K": [
+        {
+            "itemname": "Item1A",
+            "txt": [
+                {
+                    "start": "\n\\s{,40}(?:PART.{,40})?Item_1.{,10}Risk_Factors.{,39}?\n",
+                    "end": "\n\\s{,40}(?:PART.{,40})?ITEM_2.{,10}Properties.{,39}?\n"
+                },
+                {
+                    "start": "\n\\s{,40}(?:PART.{,40})?Item_1.{,10}Risk_Factors",
+                    "end": "\n\\s{,40}(?:PART.{,40})?ITEM_[2-9].{,39}?\n"
+                }
+            ],
+            "html": [
+                {
+                    "start": "\n_(?:PART.{,40})?Item_1.{,10}Risk_Factors",
+                    "end": "\n_(?:PART.{,40})?Item_2.{,10}Properties.{,99}?\n"
+                },
+                {
+                    "start": "\n_(?:PART.{,40})?Item_1.{,10}Risk_Factors",
+                    "end": "\n_(?:PART.{,40})?Item_[2-9].{,99}?\n"
+                },
+                {
+                    "start": "\n_(?:PART.{,40})?Item_1\\(?A",
+                    "end": "\n_(?:PART.{,40})?Item_[2-9].{,99}?\n"
+                }
+            ]
+        },
+        {
+            "itemname": "Item7",
+            "txt": [
+                {
+                    "start": "\n\\s{,40}(?:PART.{,40})?(?:ITEM_7.{,40})?MANAGEMENT.{,5}DISCUSSION_AND.{,69}?\n",
+                    "end": "\n\\s{,40}(?:PART.{,40})?ITEM_8.{,99}?\n"
+                },
+                {
+                    "start": "\n\\s{,40}(?:PART.{,40})?(?:ITEM_7.{,40})?MANAGEMENT.{,5}DISCUSSION_AND.{,69}?\n",
+                    "end": "\n\\s{,40}(?:PART.{,40})?(?:ITEM_8)?(?:INDEX_TO.{,20})?(?:FINANCIAL_STATEMENTS|CONSOLIDATED_BALANCE|CONSOLIDATED_STATEMENTS).{,69}?\n"
+                }
+            ],
+            "html": [
+                {
+                    "start": "\n_(?:PART.{,40})?_Item_7",
+                    "end": "\n_(?:PART.{,40})?_Item_8.{,99}?\n"
+                },
+                {
+                    "start": "\n(?:PART.{,40})?MANAGEMENT.{,5}DISCUSSION_AND",
+                    "end": "\n(?:PART.{,40})?(?:ITEM_8.{,40})?(?:INDEX_TO.{,20})?(?:FINANCIAL_STATEMENTS|CONSOLIDATED_BALANCE|CONSOLIDATED_STATEMENTS?).{,99}?\n"
+                }
+            ]
+        }
+    ],
+
+    "EX-13": [
+        {
+            "itemname": "Exhibit13",
+            "txt": [
+                {
+                    "start": "\n\\s{,40}(?:PART.{,40})?(?:ITEM_7.{,40})?Management.{,5}Discussion.{,69}?\n",
+                    "end": "\n\\s{,40}(?:PART.{,40})?(?:ITEM_8.{,40})?(?:Financial_Statement|Consolidated_Statements?_of|Significant_Accounting|Cautionary_Language|Report_of_Independent).{,69}?\n"
+                },
+                {
+                    "start": "\n\\s{,40}(?:PART.{,40})?(?:ITEM_7.{,40})?Financial_Review.{,69}?\n",
+                    "end": "\n\\s{,40}(?:PART.{,40})?(?:ITEM_8.{,40})?(?:Financial_Statement|Consolidated_Statements?_of|Significant_Accounting|Cautionary_Language|Report_of_Independent).{,69}?\n"
+                }
+            ],
+            "html": [
+                {
+                    "start": "\n_(?:PART.{,40})?(?:ITEM_7.{,40})?(?:Management.{,5}Discussion|Financial_Review)",
+                    "end": "\n_(?:PART.{,40})?(?:ITEM_8.{,40})?(?:Financial_Statement|Consolidated_Statements?_of|Significant_Accounting|Cautionary_Language|Report_of_Independent).{,99}?\n"
+                }
+            ]
+        }
+    ],
+
+    "10-Q": [
+        {
+            "itemname": "Item1A",
+            "txt": [
+                {
+                    "start": "\n\\s{,40}(?:PART.{,40})?ITEM_1.{,10}Risk_Factors.{,39}?\n",
+                    "end": "\n\\s{,40}(?:PART.{,40})?ITEM_2.{,39}?\n"
+                }
+            ],
+            "html": [
+                {
+                    "start": "\n_(?:PART.{,40})?Item_1.{,10}Risk_Factors",
+                    "end": "\n_(?:PART.{,40})?Item_2.{,10}Unregistered.{,99}?\n"
+                },
+                {
+                    "start": "\n_(?:PART.{,40})?Item_1.{,10}Risk_Factors",
+                    "end": "\n_(?:PART.{,40})?Item_\\d.{,99}?\n"
+                },
+                {
+                    "start": "\n_(?:PART.{,40})?Item_1\\(?A",
+                    "end": "\n_(?:PART.{,40})?Item_\\d.{,99}?\n"
+                },
+                {
+                    "start": "\n_(?:PART.{,40})?(?:Item_1.{,40})?.{,10}Risk_Factors",
+                    "end": "\n_(?:PART.{,40})?(?:Item_2.{,40})?.{,10}Unregistered.{,99}?\n"
+                }
+            ]
+        },
+        {
+            "itemname": "Item2",
+            "txt": [
+                {
+                    "start": "\n\\s{,40}(?:PART.{,40})?(?:ITEM_2.{,10})?Management.{,5}Discussion_and.{,69}?\n",
+                    "end": "\n\\s{,40}(?:PART.{,40})?(?:ITEM_3|PART_II).{,39}?\n"
+                },
+                {
+                    "start": "\n\\s{,40}(?:PART.{,40})?(?:ITEM_2.{,10})?Management.{,5}Discussion_and.{,69}?\n",
+                    "end": "\n\\s{,40}(?:PART_II|Item_[3-9]).{,39}?\n"
+                }
+            ],
+            "html": [
+                {
+                    "start": "\n_(?:PART.{,40})?Item_2.{,10}Management",
+                    "end": "\n_(?:PART.{,40})?(?:Item_[3-9]|Quantitative_and_Qualitative|Controls_and_Procedures|OTHER_INFORMATION|Legal_Proceedings).{,99}?\n"
+                },
+                {
+                    "start": "\n_(?:PART.{,40})?(?:Item_2{,10})?Management.{,5}Discussion_and_Analysis",
+                    "end": "\n_(?:PART.{,40})?(?:Item_[3-9]|Quantitative_and_Qualitative|Controls_and_Procedures|OTHER_INFORMATION|Legal_Proceedings).{,99}?\n"
+                },
+                {
+                    "start": "\n_Disclosure_Regarding_Forward",
+                    "end": "\n_(?:PART.{,40})?(?:Item_[3-9]|Quantitative_and_Qualitative|Controls_and_Procedures|OTHER_INFORMATION|Legal_Proceedings).{,99}?\n"
+                },
+                {
+                    "start": "\n_(?:Executive_Overview|Business_Overview)",
+                    "end": "\n_(?:PART.{,40})?(?:Item_[3-9]|Quantitative_and_Qualitative|Controls_and_Procedures|OTHER_INFORMATION|Legal_Proceedings).{,99}?\n"
+                },
+                {
+                    "start": "\n_(?:PART.{,40})?Item_2",
+                    "end": "\n_(?:PART.{,40})?(?:Item_[3-9]|Quantitative_and_Qualitative|Controls_and_Procedures|OTHER_INFORMATION|Legal_Proceedings).{,99}?\n"
+                }
+            ]
+        }
+    ],
+
+    "EX-99": [
+        {
+            "itemname": "EX-99",
+            "txt": [
+                {
+                    "start": "^",
+                    "end": "$"
+                }
+            ],
+            "html": [
+                {
+                    "start": "^",
+                    "end": "$"
+                }
+            ]
+        }
+    ]
+}

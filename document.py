@@ -6,6 +6,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import time
+from datetime import datetime
 import copy
 import os
 from abc import ABCMeta
@@ -57,6 +58,7 @@ class Document(object):
             metadata.endpoints = [start_text, end_text]
             metadata.warnings = warnings
             metadata.time_elapsed = round(prep_time + time_elapsed, 1)
+            metadata.section_end_time = str(datetime.utcnow())
             if text_extract:
                 # success: save the excerpt file
                 metadata.section_n_characters = len(text_extract)

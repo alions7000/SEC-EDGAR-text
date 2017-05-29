@@ -10,8 +10,7 @@ import re
 from download import EdgarCrawler
 from utils import logger, args
 from utils import companies_file_location, single_company, date_search_string
-
-
+from utils import batch_number
 
 class Downloader(object):
     def __init__(self):
@@ -69,15 +68,14 @@ class Downloader(object):
                         "Not saving source documents locally.")
         logger.info("SEC filing date range: %i to %i", start_date, end_date)
 
-        logger.info("Beginning download from list of " +
-                       str(len(all_companies)) + " companies.")
-
         for c, company_keys in enumerate(all_companies):
             edgar_search_string = str(company_keys[0])
             company_description = str(company_keys[1]).strip()
             company_description = re.sub('/','', company_description)
 
-            logger.info('Begin downloading company: ' + str(c + 1) + ' / ' +
+            logger.info('Batch number: ' + str(batch_number) +
+                        ', begin downloading company: ' +
+                        str(c + 1) + ' / ' +
                         str(len(all_companies)))
             for filing_search_string in args.filings:
                 seccrawler.download_filings(company_description,

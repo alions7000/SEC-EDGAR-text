@@ -54,6 +54,7 @@ class EdgarCrawler(object):
             base_url = re.sub('-index.htm.?','',index_url) + ".txt"
             filings_list.append([index_url, base_url, company_description])
             filing_metadata = Metadata(index_url)
+
             if re.search(date_search_string,
                          str(filing_metadata.sec_period_of_report)):
                 filing_metadata.sec_index_url = index_url
@@ -144,7 +145,7 @@ class EdgarCrawler(object):
         # fixed order.
         for document_group in master_search_terms:
             doc_search = re.search("<DOCUMENT>.{,20}<TYPE>" + document_group +
-                                   ".*</DOCUMENT>", filing_text,
+                                   ".*?</DOCUMENT>", filing_text,
                                    flags=re.DOTALL | re.IGNORECASE)
             if doc_search:
                 doc_text = doc_search.group()
