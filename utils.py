@@ -33,6 +33,7 @@ parser.add_argument('--filings')
 parser.add_argument('--start')
 parser.add_argument('--end')
 parser.add_argument('--report_period')
+parser.add_argument('--batch_signature')
 args = parser.parse_args()
 args.storage = args.storage or \
     path.join(script_dir, 'data')
@@ -119,6 +120,7 @@ c = conn.cursor()
 c.execute("""CREATE TABLE IF NOT EXISTS metadata (
     id integer PRIMARY KEY,
     batch_number integer NOT NULL,
+    batch_signature text NOT NULL,
     batch_start_time datetime NOT NULL,
     batch_machine_id text,
     sec_cik text NOT NULL,

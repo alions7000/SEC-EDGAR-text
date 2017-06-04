@@ -98,7 +98,7 @@
                 },
                 {
                     "start": "\n_(?:PART.{,40})?(?:Item_1.{,40})?.{,10}Risk_Factors",
-                    "end": "\n_(?:PART.{,40})?(?:Item_2.{,40})?.{,10}Unregistered.{,99}?\n"
+                    "end": "\n_(?:PART.{,40})?.{,10}(?:Item_[2-9]|Unregistered).{,99}?\n"
                 }
             ]
         },

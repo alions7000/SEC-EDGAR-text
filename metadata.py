@@ -42,6 +42,7 @@ class Metadata(object):
         self.output_file = None
         self.time_elapsed = None
         self.batch_number = batch_number
+        self.batch_signature = args.batch_signature or ''
         self.batch_start_time = str(batch_start_time)
         self.batch_machine_id = batch_machine_id
         self.section_end_time = None
@@ -129,6 +130,7 @@ class Metadata(object):
         c = conn.cursor()
         sql_insert = """INSERT INTO metadata (
             batch_number,
+            batch_signature,
             batch_start_time,
             batch_machine_id,
             sec_cik,
@@ -149,6 +151,7 @@ class Metadata(object):
             end_line,
             time_elapsed) VALUES
             """ + "('" + "', '".join([str(self.batch_number),
+                       str(self.batch_signature),
                        str(self.batch_start_time), self.batch_machine_id,
                        self.sec_cik,
                        re.sub("[\'\"]","", self.company_description).strip(),
@@ -197,6 +200,7 @@ def load_from_json(file_path):
             metadata.output_file = data['output_file']
             metadata.time_elapsed = data['time_elapsed']
             metadata.batch_number = data['batch_number']
+            metadata.batch_signature = data['batch_signature']
             metadata.batch_start_time = data['batch_start_time']
             metadata.batch_machine_id = data['batch_machine_id']
             metadata.section_end_time = data['section_end_time']
