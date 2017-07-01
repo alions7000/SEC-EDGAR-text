@@ -6,13 +6,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 # Originally adapted from "SEC-Edgar" package code
+import sys
 import os
 import re
 import copy
-import requests
 from bs4 import BeautifulSoup
 
-from utils import logger
+from utils import args, logger, requests_get
 from metadata import Metadata
 from utils import search_terms as master_search_terms
 from html_document import HtmlDocument
@@ -95,7 +95,8 @@ class EdgarCrawler(object):
             str(edgar_search_string) + " (" + company_description + ")")
         logger.debug("EDGAR search URL: " + base_url)
         logger.info('-' * 100)
-        r = requests.get(base_url)
+
+        r = requests_get(base_url)
         data = r.text
         soup = BeautifulSoup(data, "html.parser")
 
@@ -122,17 +123,9 @@ class EdgarCrawler(object):
                     filing_metadata.sec_form_header,
                     filing_metadata.sec_period_of_report,
                     filing_metadata.sec_index_url)
-        try:
-            r = requests.get(base_url)
-            filing_text = r.text
-        except:
-            r = None
-            filing_text = ''
-            logger.warning('EdgarCrawler: Failed to download file %s',
-                           base_url)
-            logger.warning('(%s, %s, %s)', company_description,
-                           filing_metadata.sec_form_header,
-                           filing_metadata.sec_company_name)
+
+        r = requests_get(base_url)
+        filing_text = r.text
         filing_metadata.add_data_from_filing_text(filing_text[0:10000])
 
         # Iterate through the DOCUMENT types that we are seeking,
@@ -143,7 +136,9 @@ class EdgarCrawler(object):
         # whether the current filing came from a '10-K' or '10-Q' web query
         # originally. Also note that we process DOCUMENT types in no
         # fixed order.
-        for document_group in master_search_terms:
+        filtered_search_terms = {doc_type: master_search_terms[doc_type]
+                                 for doc_type in args.documents}
+        for document_group in filtered_search_terms:
             doc_search = re.search("<DOCUMENT>.{,20}<TYPE>" + document_group +
                                    ".*?</DOCUMENT>", filing_text,
                                    flags=re.DOTALL | re.IGNORECASE)

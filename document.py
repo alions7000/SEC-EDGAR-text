@@ -12,7 +12,7 @@ import os
 from abc import ABCMeta
 
 from utils import search_terms as master_search_terms
-from utils import logger
+from utils import args, logger
 
 class Document(object):
     __metaclass__ = ABCMeta
@@ -82,7 +82,8 @@ class Document(object):
                     pass
                 metadata.metadata_file_name = failure_metadata_output_path
                 metadata.save_to_json(failure_metadata_output_path)
-            metadata.save_to_db()
+            if args.write_sql:
+                metadata.save_to_db()
 
     def prepare_text(self):
         # handled in child classes

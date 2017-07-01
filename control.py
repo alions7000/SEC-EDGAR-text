@@ -57,7 +57,11 @@ class Downloader(object):
         logger.info("Storage location: %s", self.storage_path)
         logger.info('-' * 65)
 
-        all_companies = companies
+        start_company = max(0, int(args.start_company or 0))
+        end_company = min(len(companies),
+                          int(args.end_company or len(companies)))
+
+        download_companies = companies[start_company:end_company]
         seccrawler = EdgarCrawler(self.storage_path)
 
         if do_save_full_document:
@@ -68,7 +72,7 @@ class Downloader(object):
                         "Not saving source documents locally.")
         logger.info("SEC filing date range: %i to %i", start_date, end_date)
 
-        for c, company_keys in enumerate(all_companies):
+        for c, company_keys in enumerate(download_companies):
             edgar_search_string = str(company_keys[0])
             company_description = str(company_keys[1]).strip()
             company_description = re.sub('/','', company_description)
@@ -76,7 +80,7 @@ class Downloader(object):
             logger.info('Batch number: ' + str(batch_number) +
                         ', begin downloading company: ' +
                         str(c + 1) + ' / ' +
-                        str(len(all_companies)))
+                        str(len(download_companies)))
             for filing_search_string in args.filings:
                 seccrawler.download_filings(company_description,
                                             edgar_search_string,
@@ -84,9 +88,10 @@ class Downloader(object):
                                             date_search_string,
                                             str(start_date),
                                             str(end_date), do_save_full_document)
-        logger.warning("SUCCESS: Finished downloading " + str(c+1) +
-                       " companies selected from list of " +
-                       str(len(all_companies)) + " companies." )
+        logger.warning("SUCCESS: Finished attempted download of " +
+                       str(len(download_companies) or 0) +
+                       " companies from an overall list of " +
+                       str(len(companies) or 0) + " companies." )
 
 
 def company_list(text_file_location):

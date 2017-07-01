@@ -18,6 +18,7 @@ Comments and contributions welcome!
 
 #### About the project
 
+* I completed this project during a sabbatical from my job.
 * I used [SEC-Edgar-Crawler](https://github.com/rahulrrixe/sec-edgar)
 for initial ideas which helped this project.
 * Thanks to my colleagues at Rosenberg Equities for help with an earlier

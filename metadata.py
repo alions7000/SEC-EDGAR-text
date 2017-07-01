@@ -7,13 +7,12 @@
 """
 import json
 import re
-import requests
 from bs4 import BeautifulSoup, Tag, NavigableString
 from os import path
 import sqlite3
 
 from utils import logger
-from utils import args
+from utils import args, requests_get
 from utils import batch_number, batch_start_time, batch_machine_id
 
 
@@ -48,7 +47,7 @@ class Metadata(object):
         self.section_end_time = None
 
         if index_url:
-            ri = requests.get(index_url)
+            ri = requests_get(index_url)
             soup = BeautifulSoup(ri.text, 'html.parser')
             # Parse the page to find metadata
             index_metadata = {}
@@ -138,6 +137,7 @@ class Metadata(object):
             sec_company_name,
             sec_form_header,
             sec_period_of_report,
+            sec_filing_date,
             sec_index_url,
             sec_url,
             metadata_file_name,
@@ -157,6 +157,7 @@ class Metadata(object):
                        re.sub("[\'\"]","", self.company_description).strip(),
                        re.sub("[\'\"]","", self.sec_company_name).strip(),
                        self.sec_form_header, self.sec_period_of_report,
+                       self.sec_filing_date,
                        self.sec_index_url, self.sec_url,
                        self.metadata_file_name, self.document_group,
                        self.section_name, str(self.section_n_characters),
