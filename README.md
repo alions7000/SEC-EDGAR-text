@@ -52,6 +52,9 @@ filing documents, financial statements information, or parsing
 XBRL filings. This package aims to make access to large volumes of text
 information easier and more consistent.
 
+https://github.com/datasets/edgar A nice introduction to the EDGAR database
+website.
+
 Professor Bill McDonald, with collaborators including Prof Tim Loughran
 has led much of the academic reserach into company filings' text
 data in recent years. He much shares the approach
