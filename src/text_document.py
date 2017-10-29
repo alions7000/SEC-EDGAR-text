@@ -7,8 +7,7 @@
 """
 import re
 
-from utils import logger
-from document import Document
+from .document import Document
 
 
 class TextDocument(Document):

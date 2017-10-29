@@ -12,11 +12,11 @@ import re
 import copy
 from bs4 import BeautifulSoup
 
-from utils import args, logger, requests_get
-from metadata import Metadata
-from utils import search_terms as master_search_terms
-from html_document import HtmlDocument
-from text_document import TextDocument
+from .utils import args, logger, requests_get
+from .metadata import Metadata
+from .utils import search_terms as master_search_terms
+from .html_document import HtmlDocument
+from .text_document import TextDocument
 
 
 class EdgarCrawler(object):
@@ -26,7 +26,7 @@ class EdgarCrawler(object):
     def download_filings(self, company_description, edgar_search_string,
                          filing_search_string, date_search_string,
                          start_date, end_date,
-                         do_save_full_document, count=9999):
+                         do_save_full_document, count=100):
         """Build a list of all filings of a certain type, within a date range.
 
         Then download them and extract the text of interest

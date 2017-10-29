@@ -8,10 +8,10 @@
 import re
 import os
 
-from download import EdgarCrawler
-from utils import logger, args
-from utils import companies_file_location, single_company, date_search_string
-from utils import batch_number, storage_toplevel_directory
+from .download import EdgarCrawler
+from .utils import logger, args
+from .utils import companies_file_location, single_company, date_search_string
+from .utils import batch_number, storage_toplevel_directory
 
 MAX_FILES_IN_SUBDIRECTORY = 1000
 
@@ -60,7 +60,7 @@ class Downloader(object):
         logger.info("Storage location: %s", self.storage_path)
         logger.info('-' * 65)
 
-        start_company = max(0, int(args.start_company or 0))
+        start_company = max(1, int(args.start_company or 1))
         end_company = min(len(companies),
                           int(args.end_company or len(companies)))
 

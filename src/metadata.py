@@ -11,10 +11,10 @@ from bs4 import BeautifulSoup, Tag, NavigableString
 import time
 import random
 
-from utils import logger
-from utils import args, requests_get
-from utils import batch_number, batch_start_time, batch_machine_id
-from utils import sql_cursor, sql_connection
+from .utils import logger
+from .utils import args, requests_get
+from .utils import batch_number, batch_start_time, batch_machine_id
+from .utils import sql_cursor, sql_connection
 
 
 class Metadata(object):

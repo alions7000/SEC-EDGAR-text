@@ -10,8 +10,8 @@ import time
 from statistics import median
 from bs4 import BeautifulSoup, NavigableString, Tag, Comment
 
-from utils import logger
-from document import Document
+from .utils import logger
+from .document import Document
 
 
 class HtmlDocument(Document):

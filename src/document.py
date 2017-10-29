@@ -11,8 +11,8 @@ import copy
 import os
 from abc import ABCMeta
 
-from utils import search_terms as master_search_terms
-from utils import args, logger
+from .utils import search_terms as master_search_terms
+from .utils import args, logger
 
 class Document(object):
     __metaclass__ = ABCMeta

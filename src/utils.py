@@ -25,7 +25,7 @@ from copy import copy
 """
 companies_file_location = ''
 single_company = ''
-project_dir = path.dirname(__file__)
+project_dir = path.dirname(path.dirname(__file__))
 parser = argparse.ArgumentParser()
 parser.add_argument('--storage')
 parser.add_argument('--write_sql')

@@ -17,8 +17,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from control import Downloader
-from utils import logger, sql_cursor, sql_connection
+from src.control import Downloader
+from src.utils import logger, sql_cursor, sql_connection
 
 def main():
     try:
