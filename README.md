@@ -1,8 +1,9 @@
 # SEC EDGAR Text
-Download company filings from the SEC EDGAR service, and find key text
-sections of interest.
+The goal of this project is to download large numbers of company filings
+from the SEC EDGAR service, extract key text sections of interest,
+and store them in an easily accessible and readable format.
 
-![](home_depot.png)
+![Home depot screenshots](img/home_depot_screenshots.png)
 
 Download key text sections of SEC EDGAR company filings. Format, organise
 and store the text excerpts ready for both automated processing (NLP) and
@@ -27,12 +28,14 @@ for initial ideas which helped this project.
 attempt to download EDGAR data.
 
 ## Installation
+Clone the repo, and install the packages in requirements.txt.
 
 
 ## Usage
-Typical usage (default: download the 500 companies in 'companies_list.txt'):
+Typical usage. This will download the 500 large US companies in the
+included 'companies_list.txt' file. Run from the project folder.
 
-```python secedgartext --storage=/tmp/storage_folder```
+```python secedgartext --storage=/tmp/my_storage_folder```
 
 
 ## Background
@@ -44,17 +47,30 @@ Electronic filing was mandatory from 1996.
 
 ### Retrieving text data from EDGAR
 
-![](output_files_example_image.png)
+![Example of files download](img/output_files_example_image.png)
 
-### Other packages, and academic research
-Many specialised projects automate access to EDGAR filings.
-Some access text data, like this one. Most focus on downloading whole
+
+### References
+**Other packages**
+
+Lots of open source projects have automated access to EDGAR filings.
+A few access text data, like this one. Most focus on downloading whole
 filing documents, financial statements information, or parsing
 XBRL filings. This package aims to make access to large volumes of text
 information easier and more consistent.
 
 https://github.com/datasets/edgar A nice introduction to the EDGAR database
 website.
+https://github.com/eliangcs/pystock-crawler A project which also accesses
+daily stock prices from Yahoo Finance
+
+https://github.com/rahulrrixe/sec-edgar Download a list of filings and
+save the complete document locally.
+https://github.com/lukerosiak/pysec Django code for parsing XBRL documents.
+https://github.com/eliangcs/pystock-crawler A project which also accesses
+daily stock prices from Yahoo Finance
+
+**Academic research**
 
 Professor Bill McDonald, with collaborators including Prof Tim Loughran
 has led much of the academic reserach into company filings' text
