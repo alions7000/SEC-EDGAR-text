@@ -6,11 +6,14 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import re
+import os
 
 from download import EdgarCrawler
 from utils import logger, args
 from utils import companies_file_location, single_company, date_search_string
-from utils import batch_number
+from utils import batch_number, storage_toplevel_directory
+
+MAX_FILES_IN_SUBDIRECTORY = 1000
 
 class Downloader(object):
     def __init__(self):
@@ -61,8 +64,9 @@ class Downloader(object):
         end_company = min(len(companies),
                           int(args.end_company or len(companies)))
 
-        download_companies = companies[start_company:end_company]
-        seccrawler = EdgarCrawler(self.storage_path)
+        download_companies = companies[start_company-1:end_company]
+        seccrawler = EdgarCrawler()
+
 
         if do_save_full_document:
             logger.info("Saving source document and extracts "
@@ -71,6 +75,7 @@ class Downloader(object):
             logger.info("Saving extracts (if successful) only. "
                         "Not saving source documents locally.")
         logger.info("SEC filing date range: %i to %i", start_date, end_date)
+        storage_subdirectory_number = 1
 
         for c, company_keys in enumerate(download_companies):
             edgar_search_string = str(company_keys[0])
@@ -81,6 +86,12 @@ class Downloader(object):
                         ', begin downloading company: ' +
                         str(c + 1) + ' / ' +
                         str(len(download_companies)))
+            storage_subdirectory = os.path.join(storage_toplevel_directory,
+                                               format(storage_subdirectory_number,
+                                                      '03d'))
+            if not os.path.exists(storage_subdirectory):
+                os.makedirs(storage_subdirectory)
+            seccrawler.storage_folder = storage_subdirectory
             for filing_search_string in args.filings:
                 seccrawler.download_filings(company_description,
                                             edgar_search_string,
@@ -88,6 +99,8 @@ class Downloader(object):
                                             date_search_string,
                                             str(start_date),
                                             str(end_date), do_save_full_document)
+            if len(os.listdir(storage_subdirectory)) > MAX_FILES_IN_SUBDIRECTORY:
+                storage_subdirectory_number += 1
         logger.warning("SUCCESS: Finished attempted download of " +
                        str(len(download_companies) or 0) +
                        " companies from an overall list of " +
@@ -113,5 +126,6 @@ def company_list(text_file_location):
                     text_items[1:2])
                 company_list.append([edgar_search_text, company_description])
     return company_list
+
 
 

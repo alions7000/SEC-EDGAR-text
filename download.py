@@ -20,8 +20,8 @@ from text_document import TextDocument
 
 
 class EdgarCrawler(object):
-    def __init__(self, storage_folder):
-        self.storage_folder = storage_folder
+    def __init__(self):
+        self.storage_folder = None
 
     def download_filings(self, company_description, edgar_search_string,
                          filing_search_string, date_search_string,
@@ -83,12 +83,14 @@ class EdgarCrawler(object):
         :return: linkList, a list of links to main pages for each filing found
         example of a typical base_url: http://www.sec.gov/cgi-bin/browse-secedgartext?action=getcompany&CIK=0000051143&type=10-K&datea=20011231&dateb=20131231&owner=exclude&output=xml&count=9999
         """
-        base_url = "http://www.sec.gov/cgi-bin/browse-edgar" + \
+
+        sec_url = "https://www.sec.gov/"
+        base_url = sec_url + "cgi-bin/browse-edgar" + \
                    "?action=getcompany&CIK=" + \
                    str(edgar_search_string) + "&type=" + \
                    filing_search_string + "&datea=" + \
                    str(start_date) + "&dateb=" + str(end_date) + \
-                   "&owner=exclude&output=xml&count=" + str(count)
+                   "&owner=exclude&output=html&count=" + str(count)
         logger.info('-' * 100)
         logger.info(
             "Query EDGAR database for " + filing_search_string + ", Search: " +
@@ -96,14 +98,21 @@ class EdgarCrawler(object):
         logger.debug("EDGAR search URL: " + base_url)
         logger.info('-' * 100)
 
-        r = requests_get(base_url)
-        data = r.text
-        soup = BeautifulSoup(data, "html.parser")
-
         linkList = []  # List of all links from the CIK page
-        for link in soup.find_all('filinghref'):
-            URL = link.string
-            linkList.append(URL)
+        continuation_tag = ' '
+
+        while continuation_tag:
+            r = requests_get(base_url)
+            data = r.text
+            soup = BeautifulSoup(data, "html.parser")
+            for link in soup.find_all('a', {'id': 'documentsbutton'}):
+                URL = sec_url + link['href']
+                linkList.append(URL)
+            continuation_tag = soup.find('input', {'value': 'Next ' + str(count)})
+            if continuation_tag:
+                continuation_string = continuation_tag['onclick']
+                base_url = sec_url + re.findall('cgi-bin.*count='+str(count), continuation_string)[0]
+
         return linkList
 
 
@@ -206,5 +215,6 @@ class EdgarCrawler(object):
                 else:
                     filing_metadata.original_file_name = \
                         "file was not saved locally"
+
 
 

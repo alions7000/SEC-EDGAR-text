@@ -8,12 +8,13 @@
 import json
 import re
 from bs4 import BeautifulSoup, Tag, NavigableString
-from os import path
-import sqlite3
+import time
+import random
 
 from utils import logger
 from utils import args, requests_get
 from utils import batch_number, batch_start_time, batch_machine_id
+from utils import sql_cursor, sql_connection
 
 
 class Metadata(object):
@@ -47,12 +48,22 @@ class Metadata(object):
         self.section_end_time = None
 
         if index_url:
-            ri = requests_get(index_url)
-            soup = BeautifulSoup(ri.text, 'html.parser')
-            # Parse the page to find metadata
             index_metadata = {}
-            form_type = soup.find('div', {'id': 'formHeader'}).\
-                find_next('strong').string.strip()
+            attempts = 0
+            while attempts < 5:
+                try:
+                    ri = requests_get(index_url)
+                    soup = BeautifulSoup(ri.text, 'html.parser')
+                    # Parse the page to find metadata
+                    form_type = soup.find('div', {'id': 'formHeader'}). \
+                        find_next('strong').string.strip()
+                    break
+                except:
+                    attempts += 1
+                    logger.warning('No valid index page, attempt %i: %s'
+                                   % (attempts, index_url))
+                    time.sleep(attempts*10 + random.randint(1,5))
+
             index_metadata['formHeader'] = form_type
             infoheads = soup.find_all('div', class_='infoHead')
             for i in infoheads:
@@ -102,7 +113,6 @@ class Metadata(object):
 
     def save_to_json(self, file_path):
         """
-
         we effectively convert the Metadata object's data into a dict
         when we do json.dumps on it
         :param file_path:
@@ -125,8 +135,8 @@ class Metadata(object):
 
         """
 
-        conn = sqlite3.connect(path.join(args.storage, 'metadata.sqlite3'))
-        c = conn.cursor()
+        # conn = sqlite3.connect(path.join(args.storage, 'metadata.sqlite3'))
+        # c = conn.cursor()
         sql_insert = """INSERT INTO metadata (
             batch_number,
             batch_signature,
@@ -152,7 +162,8 @@ class Metadata(object):
             time_elapsed) VALUES
             """ + "('" + "', '".join([str(self.batch_number),
                        str(self.batch_signature),
-                       str(self.batch_start_time), self.batch_machine_id,
+                       str(self.batch_start_time)[:-3],  # take only 3dp microseconds
+                       self.batch_machine_id,
                        self.sec_cik,
                        re.sub("[\'\"]","", self.company_description).strip(),
                        re.sub("[\'\"]","", self.sec_company_name).strip(),
@@ -161,15 +172,15 @@ class Metadata(object):
                        self.sec_index_url, self.sec_url,
                        self.metadata_file_name, self.document_group,
                        self.section_name, str(self.section_n_characters),
-                       str(self.section_end_time),
+                       str(self.section_end_time)[:-3],
                        self.extraction_method,
                        str(self.output_file),
-                       re.sub("[\'\"]","", self.endpoints[0]).strip(),
-                       re.sub("[\'\"]","", self.endpoints[1]).strip(),
+                       re.sub("[\'\"]","", self.endpoints[0]).strip()[0:200],
+                       re.sub("[\'\"]","", self.endpoints[1]).strip()[0:200],
                        str(self.time_elapsed)]) + "')"
-        c.execute(sql_insert)
-        conn.commit()
-        conn.close()
+        sql_insert = sql_insert.replace("'None'","NULL")
+        sql_cursor.execute(sql_insert)
+        sql_connection.commit()
 
 
 def load_from_json(file_path):
@@ -210,5 +221,4 @@ def load_from_json(file_path):
             logger.info('Could not load corrupted JSON file: ' + file_path)
 
     return metadata
-
 

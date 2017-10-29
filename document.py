@@ -62,7 +62,8 @@ class Document(object):
             if text_extract:
                 # success: save the excerpt file
                 metadata.section_n_characters = len(text_extract)
-                with open(txt_output_path, 'w', encoding='utf-8') as txt_output:
+                with open(txt_output_path, 'w', encoding='utf-8',
+                          newline='\n') as txt_output:
                     txt_output.write(text_extract)
                 logger.debug(': '.join(['SUCCESS Saved file for',
                                          section_name, txt_output_path]))

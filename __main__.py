@@ -18,13 +18,24 @@
 """
 
 from control import Downloader
+from utils import logger, sql_cursor, sql_connection
 
 def main():
-    Downloader().download_companies(do_save_full_document=False)
+    try:
+        Downloader().download_companies(do_save_full_document=False)
+    except Exception:
+        # this makes sure that the full error message is recorded in
+        # the logger text file for the process
+        logger.exception("Fatal error in company downloading")
+
+    # tidy up database before closing
+    sql_cursor.execute("delete from metadata where sec_cik like 'dummy%'")
+    sql_connection.close()
 
 
 if __name__ == '__main__':
     main()
+
 
 
 

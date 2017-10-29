@@ -1,6 +1,21 @@
 {
     "10-K": [
         {
+            "itemname": "Item1",
+            "txt": [
+                {
+                    "start": "\n\\s{,40}(?:PART.{,40})?Item_1.{,10}Business.{,39}?\n",
+                    "end": "\n\\s{,40}(?:PART.{,40})?ITEM_(?:1A|2).{,10}(?:Risk_Factors|Properties).{,39}?\n"
+                }
+            ],
+            "html": [
+                {
+                    "start": "\n_(?:PART.{,40})?Item_1.{,10}Business",
+                    "end": "\n_(?:PART.{,40})?Item_(?:1A|2).{,10}(?:Risk_Factors|Properties).{,99}?\n"
+                }
+            ]
+        },
+        {
             "itemname": "Item1A",
             "txt": [
                 {
@@ -32,24 +47,48 @@
             "txt": [
                 {
                     "start": "\n\\s{,40}(?:PART.{,40})?(?:ITEM_7.{,40})?MANAGEMENT.{,5}DISCUSSION_AND.{,69}?\n",
-                    "end": "\n\\s{,40}(?:PART.{,40})?ITEM_8.{,99}?\n"
+                    "end": "\n\\s{,40}(?:PART.{,40})?ITEM_(?:7A|8).{,99}?\n"
                 },
                 {
                     "start": "\n\\s{,40}(?:PART.{,40})?(?:ITEM_7.{,40})?MANAGEMENT.{,5}DISCUSSION_AND.{,69}?\n",
-                    "end": "\n\\s{,40}(?:PART.{,40})?(?:ITEM_8)?(?:INDEX_TO.{,20})?(?:FINANCIAL_STATEMENTS|CONSOLIDATED_BALANCE|CONSOLIDATED_STATEMENTS).{,69}?\n"
+                    "end": "\n\\s{,40}(?:PART.{,40})?(?:INDEX_TO.{,20})?(?:QUANTITATIVE_AND_QUALITATIVE_DISCLOSURES|FINANCIAL_STATEMENTS|CONSOLIDATED_BALANCE|CONSOLIDATED_STATEMENTS).{,69}?\n"
                 }
             ],
             "html": [
                 {
                     "start": "\n_(?:PART.{,40})?_Item_7",
-                    "end": "\n_(?:PART.{,40})?_Item_8.{,99}?\n"
+                    "end": "\n_(?:PART.{,40})?_Item_(?:7A|8).{,99}?\n"
                 },
                 {
                     "start": "\n(?:PART.{,40})?MANAGEMENT.{,5}DISCUSSION_AND",
-                    "end": "\n(?:PART.{,40})?(?:ITEM_8.{,40})?(?:INDEX_TO.{,20})?(?:FINANCIAL_STATEMENTS|CONSOLIDATED_BALANCE|CONSOLIDATED_STATEMENTS?).{,99}?\n"
+                    "end": "\n(?:PART.{,40})?(?:INDEX_TO.{,20})?(?:QUANTITATIVE_AND_QUALITATIVE_DISCLOSURES|FINANCIAL_STATEMENTS|CONSOLIDATED_BALANCE|CONSOLIDATED_STATEMENTS?).{,99}?\n"
+                }
+            ]
+        },
+        {
+            "itemname": "Item7A",
+            "txt": [
+                {
+                    "start": "\n\\s{,40}(?:PART.{,40})?(?:ITEM_7A.{,40})?QUANTITATIVE_AND_QUALITATIVE_DISCLOSURES.{,69}?\n",
+                    "end": "\n\\s{,40}(?:PART.{,40})?ITEM_8.{,99}?\n"
+                },
+                {
+                    "start": "\n\\s{,40}(?:PART.{,40})?(?:ITEM_7A.{,40})?QUANTITATIVE_AND_QUALITATIVE_DISCLOSURES.{,69}?\n",
+                    "end": "\n\\s{,40}(?:PART.{,40})?(?:INDEX_TO.{,20})?(?:FINANCIAL_STATEMENTS|CONSOLIDATED_BALANCE|CONSOLIDATED_STATEMENTS).{,69}?\n"
+                }
+            ],
+            "html": [
+                {
+                    "start": "\n_(?:PART.{,40})?_Item_7A",
+                    "end": "\n_(?:PART.{,40})?_Item_8.{,99}?\n"
+                },
+                {
+                    "start": "\n(?:PART.{,40})?QUANTITATIVE_AND_QUALITATIVE_DISCLOSURES",
+                    "end": "\n(?:PART.{,40})?(?:INDEX_TO.{,20})?(?:FINANCIAL_STATEMENTS|CONSOLIDATED_BALANCE|CONSOLIDATED_STATEMENTS?).{,99}?\n"
                 }
             ]
         }
+
     ],
 
     "EX-13": [
@@ -107,11 +146,11 @@
             "txt": [
                 {
                     "start": "\n\\s{,40}(?:PART.{,40})?(?:ITEM_2.{,10})?Management.{,5}Discussion_and.{,69}?\n",
-                    "end": "\n\\s{,40}(?:PART.{,40})?(?:ITEM_3|PART_II).{,39}?\n"
+                    "end": "\n\\s{,40}(?:PART.{,40})?(?:ITEM_3|PART_II).{,99}?\n"
                 },
                 {
                     "start": "\n\\s{,40}(?:PART.{,40})?(?:ITEM_2.{,10})?Management.{,5}Discussion_and.{,69}?\n",
-                    "end": "\n\\s{,40}(?:PART_II|Item_[3-9]).{,39}?\n"
+                    "end": "\n\\s{,40}(?:PART_II|Item_[3-9]).{,99}?\n"
                 }
             ],
             "html": [
@@ -151,5 +190,24 @@
                 }
             ]
         }
+
+    ],
+    "8-K": [
+        {
+            "itemname": "8-K",
+            "txt": [
+                {
+                    "start": "^",
+                    "end": "$"
+                }
+            ],
+            "html": [
+                {
+                    "start": "^",
+                    "end": "$"
+                }
+            ]
+        }
+
     ]
 }
