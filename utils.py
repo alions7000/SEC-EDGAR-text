@@ -46,7 +46,7 @@ if args.storage:
     if not path.isabs(args.storage):
         args.storage = path.join(project_dir, args.storage)
 else:
-    args.storage = path.join(project_dir, 'output_files_sample')
+    args.storage = path.join(project_dir, 'output_files_examples')
 
 args.write_sql = args.write_sql or True
 if args.company:

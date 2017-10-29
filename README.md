@@ -2,6 +2,8 @@
 Download company filings from the SEC EDGAR service, and find key text
 sections of interest.
 
+![](home_depot.png)
+
 Download key text sections of SEC EDGAR company filings. Format, organise
 and store the text excerpts ready for both automated processing (NLP) and
 for human reading (spot-checking). Structured storage of text and
@@ -42,8 +44,7 @@ Electronic filing was mandatory from 1996.
 
 ### Retrieving text data from EDGAR
 
-*Screenshots, picutres of EDGAR documents here*
-
+![](output_files_example_image.png)
 
 ### Other packages, and academic research
 Many specialised projects automate access to EDGAR filings.
