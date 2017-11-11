@@ -6,7 +6,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 # Originally adapted from "SEC-Edgar" package code
-import sys
+import multiprocessing as mp
 import os
 import re
 import copy
@@ -48,6 +48,10 @@ class EdgarCrawler(object):
 
         logger.info("Identified " + str(len(filings_links)) +
                     " filings, gathering SEC metadata and document links...")
+
+        if args.multiprocessing_cores > 1:
+            pool = mp.Pool(processes = args.multiprocessing_cores)
+
         for i, index_url in enumerate(filings_links):
             # Get the URL for the (text-format) document which packages all
             # of the parts of the filing
@@ -60,13 +64,38 @@ class EdgarCrawler(object):
                 filing_metadata.sec_index_url = index_url
                 filing_metadata.sec_url = base_url
                 filing_metadata.company_description = company_description
-                logger.info("Downloading filing #%i from %s: %s, %s", i + 1,
-                            company_description,
-                            edgar_search_string,
-                            str(filing_metadata.sec_period_of_report))
-                self.download_filing(filing_metadata, do_save_full_document)
+                if args.multiprocessing_cores > 1:
+                    # multi-core processing. Add jobs to pool.
+                    pool.apply_async(self.download_filing,
+                                     args=(filing_metadata, do_save_full_document),
+                                     callback=self.process_log_cache)
+                else:
+                    # single core processing
+                    log_cache = self.download_filing(filing_metadata, do_save_full_document)
+                    self.process_log_cache(log_cache)
+        if args.multiprocessing_cores > 1:
+            pool.close()
+            pool.join()
         logger.debug("Finished attempting to download all the %s forms for %s",
                      filing_search_string, company_description)
+
+
+    def process_log_cache(self, log_cache):
+        """Output log_cache messages via logger
+        """
+        for msg in log_cache:
+            msg_type = msg[0]
+            msg_text = msg[1]
+            if msg_type=='process_name':
+                id = '(' + msg_text + ') '
+            elif msg_type=='INFO':
+                logger.info(id + msg_text)
+            elif msg_type=='DEBUG':
+                logger.debug(id + msg_text)
+            elif msg_type=='WARNING':
+                logger.warning(id + msg_text)
+            elif msg_type=='ERROR':
+                logger.error(id + msg_text)
 
 
 
@@ -125,13 +154,15 @@ class EdgarCrawler(object):
         :param: doc_info: contains URL for the full filing submission, and
         other EDGAR index metadata
         """
+        log_cache = [('process_name', str(os.getpid()))]
         base_url = filing_metadata.sec_url
         company_description = filing_metadata.company_description
-        logger.debug("Retrieving: %s, %s, period: %s, index page: %s",
-                    filing_metadata.sec_company_name,
+        log_str = "Retrieving: %s, %s, period: %s, index page: %s" \
+            % (filing_metadata.sec_company_name,
                     filing_metadata.sec_form_header,
                     filing_metadata.sec_period_of_report,
                     filing_metadata.sec_index_url)
+        log_cache.append(('DEBUG', log_str))
 
         r = requests_get(base_url)
         filing_text = r.text
@@ -163,8 +194,9 @@ class EdgarCrawler(object):
                                          document_type)  # remove hyphens etc
                 else:
                     document_type = "document_TYPE_not_tagged"
-                    logger.error("form <TYPE> not given in form?: " + base_url)
-
+                    log_cache.append(('ERROR',
+                                      "form <TYPE> not given in form?: " +
+                                      base_url))
                 local_path = os.path.join(self.storage_folder,
                         company_description + '_' + \
                         filing_metadata.sec_cik + "_" + document_type + "_" + \
@@ -201,20 +233,23 @@ class EdgarCrawler(object):
                     reader_class = HtmlDocument
                 else:
                     reader_class = TextDocument
-                reader_class(doc_metadata.original_file_name,
+                sections_log_items = reader_class(
+                    doc_metadata.original_file_name,
                              doc_text).get_excerpt(doc_text, document_group,
                                                    doc_metadata,
                                                    skip_existing_excerpts=False)
+                log_cache = log_cache + sections_log_items
                 if do_save_full_document:
                     with open(main_path, "w") as filename:
                         filename.write(doc_text)
-                    logger.debug(
-                        "Saved file: " + main_path + ', ' +
-                        str(round(os.path.getsize(main_path) / 1024)) + ' KB')
+                    log_str = "Saved file: " + main_path + ', ' + \
+                        str(round(os.path.getsize(main_path) / 1024)) + ' KB'
+                    log_cache.append(('DEBUG', log_str))
                     filing_metadata.original_file_name = main_path
                 else:
                     filing_metadata.original_file_name = \
                         "file was not saved locally"
+        return(log_cache)
 
 
 

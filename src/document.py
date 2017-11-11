@@ -10,6 +10,7 @@ from datetime import datetime
 import copy
 import os
 from abc import ABCMeta
+import multiprocessing as mp
 
 from .utils import search_terms as master_search_terms
 from .utils import args, logger
@@ -20,6 +21,7 @@ class Document(object):
     def __init__(self, file_path, doc_text):
         self._file_path = file_path
         self.doc_text = doc_text
+        self.log_cache = []
 
     def get_excerpt(self, input_text, form_type, metadata_master,
                     skip_existing_excerpts):
@@ -65,8 +67,9 @@ class Document(object):
                 with open(txt_output_path, 'w', encoding='utf-8',
                           newline='\n') as txt_output:
                     txt_output.write(text_extract)
-                logger.debug(': '.join(['SUCCESS Saved file for',
-                                         section_name, txt_output_path]))
+                log_str = ': '.join(['SUCCESS Saved file for',
+                                         section_name, txt_output_path])
+                self.log_cache.append(('DEBUG', log_str))
                 try:
                     os.remove(failure_metadata_output_path)
                 except:
@@ -75,8 +78,9 @@ class Document(object):
                 metadata.metadata_file_name = metadata_path
                 metadata.save_to_json(metadata_path)
             else:
-                logger.warning(': '.join(['No excerpt located for ',
-                                         section_name, metadata.sec_index_url]))
+                log_str = ': '.join(['No excerpt located for ',
+                                         section_name, metadata.sec_index_url])
+                self.log_cache.append(('WARNING', log_str))
                 try:
                     os.remove(metadata_path)
                 except:
@@ -85,6 +89,7 @@ class Document(object):
                 metadata.save_to_json(failure_metadata_output_path)
             if args.write_sql:
                 metadata.save_to_db()
+        return(self.log_cache)
 
     def prepare_text(self):
         # handled in child classes

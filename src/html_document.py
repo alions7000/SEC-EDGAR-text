@@ -52,10 +52,11 @@ class HtmlDocument(Document):
         except:
             soup = BeautifulSoup(html_text, 'html.parser')      # default parser
         parsing_time_elapsed = time.clock() - start_time
-        logger.debug('parsing time: ' + '% 3.2f' %
-                     (parsing_time_elapsed) + 's; ' + "{:,}".
-                     format(len(html_text)) + ' characters; ' + "{:,}".
-                     format(len(soup.find_all())) + ' HTML elements')
+        log_str = 'parsing time: ' + '% 3.2f' % \
+                     (parsing_time_elapsed) + 's; ' + "{:,}". \
+                     format(len(html_text)) + ' characters; ' + "{:,}". \
+                     format(len(soup.find_all())) + ' HTML elements'
+        self.log_cache.append(('DEBUG', log_str))
 
         # for some old, simplistic documents lacking a proper HTML tree,
         # put in <br> tags artificially to help with parsing paragraphs, ensures
@@ -67,7 +68,7 @@ class HtmlDocument(Document):
 
         # Remove numeric tables from soup
         tables_generator = (s for s in soup.find_all('table') if
-                            should_remove_table(s))
+                            self.should_remove_table(s))
         # debug: save the extracted tables to a text file
         # tables_debug_file = open(r'tables_deleted.txt', 'wt', encoding='latin1')
         for s in tables_generator:
@@ -146,7 +147,8 @@ class HtmlDocument(Document):
                     if isinstance(s, tuple):
                         # If incorrect use of multiple regex groups has caused
                         # more than one match, then s is returned as a tuple
-                        logger.error("Groups found in Regex, please correct")
+                        self.log_cache.append(('ERROR',
+                                   "Groups found in Regex, please correct"))
                     if len(s) > longest_text_length:
                         text_extract = s.strip()
                         longest_text_length = len(s)
@@ -168,23 +170,24 @@ class HtmlDocument(Document):
 
 
 
-def should_remove_table(html):
-    """Decide whether <table> html contains a mostly-numeric table.
+    def should_remove_table(self, html):
+        """Decide whether <table> html contains a mostly-numeric table.
 
-    Identify text in table element 'html' which cannot (realistically) be
-    subject to downstream text analysis. Note there is a risk that we
-    inadvertently remove any Section headings that are inside <table> elements
-    We reduce this risk by only seeking takes with more than 5 (nonblank)
-    elements, the median length of which is fewer than 30 characters
-    """
-    char_counts = []
-    if html.stripped_strings:
-        for t in html.stripped_strings:
-            if len(t) > 0:
-                char_counts.append(len(t))
-        return len(char_counts) > 5 and median(char_counts) < 30
-    else:
-        logger.error("the should_remove_table function is broken")
+        Identify text in table element 'html' which cannot (realistically) be
+        subject to downstream text analysis. Note there is a risk that we
+        inadvertently remove any Section headings that are inside <table> elements
+        We reduce this risk by only seeking takes with more than 5 (nonblank)
+        elements, the median length of which is fewer than 30 characters
+        """
+        char_counts = []
+        if html.stripped_strings:
+            for t in html.stripped_strings:
+                if len(t) > 0:
+                    char_counts.append(len(t))
+            return len(char_counts) > 5 and median(char_counts) < 30
+        else:
+            self.log_cache.append(('ERROR',
+                                   "the should_remove_table function is broken"))
 
 
 

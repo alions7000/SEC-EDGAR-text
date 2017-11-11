@@ -18,6 +18,7 @@ import time
 import datetime
 import json
 import sqlite3
+import multiprocessing as mp
 from copy import copy
 
 
@@ -40,6 +41,7 @@ parser.add_argument('--batch_signature')
 parser.add_argument('--start_company')
 parser.add_argument('--end_company')
 parser.add_argument('--traffic_limit_pause_ms')
+parser.add_argument('--multiprocessing_cores')
 args = parser.parse_args()
 
 if args.storage:
@@ -205,6 +207,13 @@ logger.info('Traffic Limit Pause (ms): %s' %
             str(args.traffic_limit_pause_ms))
 
 
+if args.multiprocessing_cores:
+    args.multiprocessing_cores = min(mp.cpu_count()-1,
+                                     int(args.multiprocessing_cores))
+else:
+    args.multiprocessing_cores = 1
+
+
 """Create search_terms_regex, which stores the patterns that we
 use for identifying sections in each of EDGAR documents types
 """
@@ -242,7 +251,9 @@ def requests_get(url):
     import requests, random
     retries = 0
     success = False
-    while (not success) and (retries <= 10):
+    while (not success) and (retries <= 20):
+        # wait for an increasingly long time (up to a day) in case internet
+        # connection is broken. Gives enough time to fix connection or SEC site
         try:
             # to test the timeout functionality, try loading this page:
             # http://httpstat.us/200?sleep=20000  (20 seconds delay before page loads)
@@ -252,7 +263,7 @@ def requests_get(url):
             # https://www.sec.gov/privacy.htm#security
             time.sleep(args.traffic_limit_pause_ms/1000)
         except requests.exceptions.RequestException as e:
-            wait = retries * 10 + random.randint(1,5)
+            wait = (retries ^3) * 20 + random.randint(1,5)
             logger.warning(e)
             logger.info('URL: %s' % url)
             logger.info(

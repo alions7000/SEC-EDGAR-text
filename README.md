@@ -37,6 +37,10 @@ included 'companies_list.txt' file. Run from the project folder.
 
 ```python secedgartext --storage=/tmp/my_storage_folder```
 
+Download of a full history of key sections from 10-K and 10-Q filings for
+(most) US companies takes less than 40GB storage: around 1 million text
+excerpt files, plus a similar number of metadata files.
+
 
 ## Background
 ### About EDGAR
