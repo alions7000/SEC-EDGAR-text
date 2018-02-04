@@ -13,6 +13,7 @@ from bs4 import BeautifulSoup, NavigableString, Tag, Comment
 from .utils import logger
 from .document import Document
 
+USE_HTML2TEXT = False
 
 class HtmlDocument(Document):
     soup = None
@@ -79,43 +80,52 @@ class HtmlDocument(Document):
         # tables_debug_file.close()
         self.soup = soup
 
-        # paragraphs_analysis = []
-        # p_idx = 0
-        # has_href = False
-        # has_crossreference = False
-        paragraph_string = ''
-        document_string = ''
-        all_paras = []
-        ec = soup.find()
-        is_in_a_paragraph = True
-        while not (ec is None):
-            if is_line_break(ec) or ec.next_element is None:
-                # end of paragraph tag (does not itself contain
-                # Navigable String): insert double line-break for readability
-                if is_in_a_paragraph:
-                    is_in_a_paragraph = False
-                    all_paras.append(paragraph_string)
-                    document_string = document_string + '\n\n' + paragraph_string
-            else:
-                # continuation of the current paragraph
-                if isinstance(ec, NavigableString) and not \
-                        isinstance(ec, Comment):
-                    # # remove redundant line breaks and other whitespace at the
-                    # # ends, and in the middle, of the string
-                    # ecs = re.sub(r'\s+', ' ', ec.string.strip())
-                    ecs = re.sub(r'\s+', ' ', ec.string)
-                    if len(ecs) > 0:
-                        if not (is_in_a_paragraph):
-                            # set up for the start of a new paragraph
-                            is_in_a_paragraph = True
-                            paragraph_string = ''
-                        # paragraph_string = paragraph_string + ' ' + ecs
-                        paragraph_string = paragraph_string + ecs
-            ec = ec.next_element
-        # clean up multiple line-breaks
-        document_string = re.sub('\n\s+\n', '\n\n', document_string)
-        document_string = re.sub('\n{3,}', '\n\n', document_string)
-        self.plaintext = document_string
+        if USE_HTML2TEXT:
+            # option: use the HTML2TEXT library for paragraph splitting.
+            # Purpose and performance is generally similar to the
+            # home-made approach below
+            import html2text
+            h = html2text.HTML2Text(bodywidth=0)
+            h.ignore_emphasis = True
+            self.plaintext = h.handle(str(soup)) # use soup instead of the original html: it's faster and it benefits from the tables being excluded
+        else:
+            # paragraphs_analysis = []
+            # p_idx = 0
+            # has_href = False
+            # has_crossreference = False
+            paragraph_string = ''
+            document_string = ''
+            all_paras = []
+            ec = soup.find()
+            is_in_a_paragraph = True
+            while not (ec is None):
+                if is_line_break(ec) or ec.next_element is None:
+                    # end of paragraph tag (does not itself contain
+                    # Navigable String): insert double line-break for readability
+                    if is_in_a_paragraph:
+                        is_in_a_paragraph = False
+                        all_paras.append(paragraph_string)
+                        document_string = document_string + '\n\n' + paragraph_string
+                else:
+                    # continuation of the current paragraph
+                    if isinstance(ec, NavigableString) and not \
+                            isinstance(ec, Comment):
+                        # # remove redundant line breaks and other whitespace at the
+                        # # ends, and in the middle, of the string
+                        # ecs = re.sub(r'\s+', ' ', ec.string.strip())
+                        ecs = re.sub(r'\s+', ' ', ec.string)
+                        if len(ecs) > 0:
+                            if not (is_in_a_paragraph):
+                                # set up for the start of a new paragraph
+                                is_in_a_paragraph = True
+                                paragraph_string = ''
+                            # paragraph_string = paragraph_string + ' ' + ecs
+                            paragraph_string = paragraph_string + ecs
+                ec = ec.next_element
+            # clean up multiple line-breaks
+            document_string = re.sub('\n\s+\n', '\n\n', document_string)
+            document_string = re.sub('\n{3,}', '\n\n', document_string)
+            self.plaintext = document_string
 
 
     def extract_section(self, search_pairs):
@@ -166,8 +176,6 @@ class HtmlDocument(Document):
                                   text_extract, flags=re.IGNORECASE)
 
         return text_extract, extraction_method, start_text, end_text, warnings
-
-
 
 
     def should_remove_table(self, html):

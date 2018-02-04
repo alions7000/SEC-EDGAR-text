@@ -48,7 +48,7 @@ class Downloader(object):
                     companies.append([company_default, company_default.title()])
                     logger.info("Downloading default company: %s",
                                 next(iter(companies)))
-        start_date =  args.start
+        start_date =  args.start    # TODO:this may be ignored by EDGAR web interface, consider removing this argument
         end_date = args.end
         filings = args.filings
 

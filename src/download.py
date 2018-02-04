@@ -49,7 +49,8 @@ class EdgarCrawler(object):
         logger.info("Identified " + str(len(filings_links)) +
                     " filings, gathering SEC metadata and document links...")
 
-        if args.multiprocessing_cores > 1:
+        is_multiprocessing = args.multiprocessing_cores > 0
+        if is_multiprocessing:
             pool = mp.Pool(processes = args.multiprocessing_cores)
 
         for i, index_url in enumerate(filings_links):
@@ -64,7 +65,7 @@ class EdgarCrawler(object):
                 filing_metadata.sec_index_url = index_url
                 filing_metadata.sec_url = base_url
                 filing_metadata.company_description = company_description
-                if args.multiprocessing_cores > 1:
+                if is_multiprocessing:
                     # multi-core processing. Add jobs to pool.
                     pool.apply_async(self.download_filing,
                                      args=(filing_metadata, do_save_full_document),
@@ -73,7 +74,7 @@ class EdgarCrawler(object):
                     # single core processing
                     log_cache = self.download_filing(filing_metadata, do_save_full_document)
                     self.process_log_cache(log_cache)
-        if args.multiprocessing_cores > 1:
+        if is_multiprocessing:
             pool.close()
             pool.join()
         logger.debug("Finished attempting to download all the %s forms for %s",
@@ -113,35 +114,39 @@ class EdgarCrawler(object):
         example of a typical base_url: http://www.sec.gov/cgi-bin/browse-secedgartext?action=getcompany&CIK=0000051143&type=10-K&datea=20011231&dateb=20131231&owner=exclude&output=xml&count=9999
         """
 
-        sec_url = "https://www.sec.gov/"
-        base_url = sec_url + "cgi-bin/browse-edgar" + \
-                   "?action=getcompany&CIK=" + \
-                   str(edgar_search_string) + "&type=" + \
-                   filing_search_string + "&datea=" + \
-                   str(start_date) + "&dateb=" + str(end_date) + \
-                   "&owner=exclude&output=html&count=" + str(count)
+        sec_website = "https://www.sec.gov/"
+        browse_url = sec_website + "cgi-bin/browse-edgar"
+        requests_params = {'action': 'getcompany',
+                           'CIK': str(edgar_search_string),
+                           'type': filing_search_string,
+                           'datea': start_date,
+                           'dateb': end_date,
+                           'owner': 'exclude',
+                           'output': 'html',
+                           'count': count}
         logger.info('-' * 100)
         logger.info(
             "Query EDGAR database for " + filing_search_string + ", Search: " +
             str(edgar_search_string) + " (" + company_description + ")")
-        logger.debug("EDGAR search URL: " + base_url)
-        logger.info('-' * 100)
 
         linkList = []  # List of all links from the CIK page
-        continuation_tag = ' '
+        continuation_tag = 'first pass'
 
         while continuation_tag:
-            r = requests_get(base_url)
+            r = requests_get(browse_url, params=requests_params)
+            if continuation_tag == 'first pass':
+                logger.debug("EDGAR search URL: " + r.url)
+                logger.info('-' * 100)
             data = r.text
             soup = BeautifulSoup(data, "html.parser")
             for link in soup.find_all('a', {'id': 'documentsbutton'}):
-                URL = sec_url + link['href']
+                URL = sec_website + link['href']
                 linkList.append(URL)
-            continuation_tag = soup.find('input', {'value': 'Next ' + str(count)})
+            continuation_tag = soup.find('input', {'value': 'Next ' + str(count)}) # a button labelled 'Next 100' for example
             if continuation_tag:
                 continuation_string = continuation_tag['onclick']
-                base_url = sec_url + re.findall('cgi-bin.*count='+str(count), continuation_string)[0]
-
+                browse_url = sec_website + re.findall('cgi-bin.*count=\d*', continuation_string)[0]
+                requests_params = None
         return linkList
 
 
@@ -155,7 +160,7 @@ class EdgarCrawler(object):
         other EDGAR index metadata
         """
         log_cache = [('process_name', str(os.getpid()))]
-        base_url = filing_metadata.sec_url
+        filing_url = filing_metadata.sec_url
         company_description = filing_metadata.company_description
         log_str = "Retrieving: %s, %s, period: %s, index page: %s" \
             % (filing_metadata.sec_company_name,
@@ -164,7 +169,7 @@ class EdgarCrawler(object):
                     filing_metadata.sec_index_url)
         log_cache.append(('DEBUG', log_str))
 
-        r = requests_get(base_url)
+        r = requests_get(filing_url)
         filing_text = r.text
         filing_metadata.add_data_from_filing_text(filing_text[0:10000])
 
@@ -196,7 +201,7 @@ class EdgarCrawler(object):
                     document_type = "document_TYPE_not_tagged"
                     log_cache.append(('ERROR',
                                       "form <TYPE> not given in form?: " +
-                                      base_url))
+                                      filing_url))
                 local_path = os.path.join(self.storage_folder,
                         company_description + '_' + \
                         filing_metadata.sec_cik + "_" + document_type + "_" + \

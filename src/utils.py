@@ -34,7 +34,7 @@ parser.add_argument('--company')
 parser.add_argument('--companies_list')
 parser.add_argument('--filings')
 parser.add_argument('--documents')
-parser.add_argument('--start')
+parser.add_argument('--start')      #TODO: possibly inactive, consider removing
 parser.add_argument('--end')
 parser.add_argument('--report_period')
 parser.add_argument('--batch_signature')
@@ -211,7 +211,7 @@ if args.multiprocessing_cores:
     args.multiprocessing_cores = min(mp.cpu_count()-1,
                                      int(args.multiprocessing_cores))
 else:
-    args.multiprocessing_cores = 1
+    args.multiprocessing_cores = 0
 
 
 """Create search_terms_regex, which stores the patterns that we
@@ -243,7 +243,7 @@ args.documents = args.documents or ','.join(list(search_terms.keys()))
 args.documents = re.split(',', args.documents)          # ['10-K','10-Q']
 
 
-def requests_get(url):
+def requests_get(url, params=None):
     """retrieve text via url, fatal error if no internet connection available
     :param url: source url
     :return: text retriieved
@@ -257,7 +257,7 @@ def requests_get(url):
         try:
             # to test the timeout functionality, try loading this page:
             # http://httpstat.us/200?sleep=20000  (20 seconds delay before page loads)
-            r = requests.get(url, timeout = 10)
+            r = requests.get(url, params=params, timeout = 10)
             success = True
             # facility to add a pause to respect SEC EDGAR traffic limit
             # https://www.sec.gov/privacy.htm#security

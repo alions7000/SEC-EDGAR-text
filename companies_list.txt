@@ -1,4 +1,4 @@
-# List of CIK codes, with any additional relevant identifiers (for example tickers) used for labelling the output files
+# A list of some of the current largest US listed companies: SEC CIK code, followed by a ticker code (which is used for labelling the output files)
 354950 HD
 50104 TSO
 895421 MS
