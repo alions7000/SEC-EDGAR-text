@@ -14,7 +14,7 @@ class TextDocument(Document):
     def __init__(self, *args, **kwargs):
         super(TextDocument, self).__init__(*args, **kwargs)
 
-    def document_type(self):
+    def search_terms_type(self):
         return "txt"
 
     def extract_section(self, search_pairs):
@@ -50,12 +50,11 @@ class TextDocument(Document):
             # final_text = '\n'.join(final_text_lines)
             # text_extract = remove_table_lines(final_text)
             text_extract = remove_table_lines(text_extract)
-            extraction_method = 'text_document'
+            extraction_summary = self.extraction_method + '_document'
         else:
             warnings.append('Extraction did not work for text file')
-            extraction_method = 'text_document: failed'
-
-        return text_extract, extraction_method, start_text, end_text, warnings
+            extraction_summary = self.extraction_method + '_document: failed'
+        return text_extract, extraction_summary, start_text, end_text, warnings
 
 def remove_table_lines(input_text):
     """Replace lines believed to be part of numeric tables with a placeholder.

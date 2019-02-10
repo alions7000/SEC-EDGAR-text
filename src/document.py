@@ -18,9 +18,10 @@ from .utils import args, logger
 class Document(object):
     __metaclass__ = ABCMeta
 
-    def __init__(self, file_path, doc_text):
+    def __init__(self, file_path, doc_text, extraction_method):
         self._file_path = file_path
         self.doc_text = doc_text
+        self.extraction_method = extraction_method
         self.log_cache = []
 
     def get_excerpt(self, input_text, form_type, metadata_master,
@@ -47,11 +48,11 @@ class Document(object):
             metadata_path = section_output_path + '_metadata.json'
             failure_metadata_output_path = section_output_path + '_failure.json'
 
-            search_pairs = section_search_terms[self.document_type()]
-            text_extract, extraction_method, start_text, end_text, warnings = \
+            search_pairs = section_search_terms[self.search_terms_type()]
+            text_extract, extraction_summary, start_text, end_text, warnings = \
                 self.extract_section(search_pairs)
             time_elapsed = time.clock() - start_time
-            metadata.extraction_method = self.document_type()
+            # metadata.extraction_method = self.extraction_method
             metadata.section_name = section_name
             if start_text:
                 start_text = start_text.replace('\"', '\'')

@@ -214,6 +214,8 @@ class EdgarCrawler(object):
                 # search for a <html>...</html> block in the DOCUMENT
                 html_search = re.search(r"<(?i)html>.*?</(?i)html>",
                                         doc_text, re.DOTALL)
+                xbrl_search = re.search(r"<(?i)xbrl>.*?</(?i)xbrl>",
+                                        doc_text, re.DOTALL)
                 # occasionally a (somewhat corrupted) filing includes a mixture
                 # of HTML-format documents, but some of them are enclosed in
                 # <TEXT>...</TEXT> tags and others in <HTML>...</HTML> tags.
@@ -226,23 +228,29 @@ class EdgarCrawler(object):
                         and text_search.start() < html_search.start() \
                         and html_search.start() > 5000:
                     html_search = text_search
-                if html_search:
+                if xbrl_search:
+                    doc_metadata.extraction_method = 'xbrl'
+                    doc_text = xbrl_search.group()
+                    main_path = local_path + ".xbrl"
+                    reader_class = HtmlDocument
+                elif html_search:
                     # if there's an html block inside the DOCUMENT then just
                     # take this instead of the full DOCUMENT text
+                    doc_metadata.extraction_method = 'html'
                     doc_text = html_search.group()
                     main_path = local_path + ".htm"
-                else:
-                    main_path = local_path + ".txt"
-                doc_metadata.original_file_size = str(len(doc_text)) + ' chars'
-                if html_search:
                     reader_class = HtmlDocument
                 else:
+                    doc_metadata.extraction_method = 'txt'
+                    main_path = local_path + ".txt"
                     reader_class = TextDocument
+                doc_metadata.original_file_size = str(len(doc_text)) + ' chars'
                 sections_log_items = reader_class(
                     doc_metadata.original_file_name,
-                             doc_text).get_excerpt(doc_text, document_group,
-                                                   doc_metadata,
-                                                   skip_existing_excerpts=False)
+                    doc_text, doc_metadata.extraction_method).\
+                    get_excerpt(doc_text, document_group,
+                                doc_metadata,
+                                skip_existing_excerpts=False)
                 log_cache = log_cache + sections_log_items
                 if do_save_full_document:
                     with open(main_path, "w") as filename:

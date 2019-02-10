@@ -22,7 +22,7 @@ class HtmlDocument(Document):
     def __init__(self, *args, **kwargs):
         super(HtmlDocument, self).__init__(*args, **kwargs)
 
-    def document_type(self):
+    def search_terms_type(self):
         return "html"
 
     def prepare_text(self):
@@ -167,15 +167,15 @@ class HtmlDocument(Document):
                 start_text = final_text_lines[0]
                 end_text = final_text_lines[-1]
                 break
-        extraction_method = 'html_document'
+        extraction_summary = self.extraction_method + '_document'
         if not text_extract:
             warnings.append('Extraction did not work for HTML file')
-            extraction_method = 'html_document: failed'
+            extraction_summary = self.extraction_method + '_document: failed'
         else:
             text_extract = re.sub('\n\s{,5}Table of Contents\n', '',
                                   text_extract, flags=re.IGNORECASE)
 
-        return text_extract, extraction_method, start_text, end_text, warnings
+        return text_extract, extraction_summary, start_text, end_text, warnings
 
 
     def should_remove_table(self, html):
