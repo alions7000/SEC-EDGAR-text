@@ -30,12 +30,15 @@ attempt to download EDGAR data.
 ## Installation
 Clone the repo, and install the packages in requirements.txt.
 
+    git clone https://github.com/alions7000/SEC-EDGAR-text
+    pip install -r SEC-EDGAR-text/requirements.txt
+
 
 ## Usage
 Typical usage. This will download the 500 large US companies in the
 included 'companies_list.txt' file. Run from the project folder.
 
-```python secedgartext --storage=/tmp/my_storage_folder```
+    python SEC-EDGAR-text --storage=/tmp/my_storage_folder
 
 Download of a full history of key sections from 10-K and 10-Q filings for
 (most) US companies takes less than 40GB storage: around 1 million text
