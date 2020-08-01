@@ -47,12 +47,12 @@ class HtmlDocument(Document):
         # installation. Straightforward on Linux, somewhat tricky on Windows.
         # http://stackoverflow.com/questions/29440482/how-to-install-lxml-on-windows
         # ...note install the 32-bit version for Intel 64-bit?
-        start_time = time.clock()
+        start_time = time.process_time()
         try:
             soup = BeautifulSoup(html_text, 'lxml')
         except:
             soup = BeautifulSoup(html_text, 'html.parser')      # default parser
-        parsing_time_elapsed = time.clock() - start_time
+        parsing_time_elapsed = time.process_time() - start_time
         log_str = 'parsing time: ' + '% 3.2f' % \
                      (parsing_time_elapsed) + 's; ' + "{:,}". \
                      format(len(html_text)) + ' characters; ' + "{:,}". \

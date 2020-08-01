@@ -35,14 +35,26 @@ Clone the repo, and install the packages in requirements.txt.
 
 
 ## Usage
-Typical usage. This will download the 500 large US companies in the
-included 'companies_list.txt' file. Run from the project folder.
+*Basic usage* This will download those 500 large US companies in the
+included 'companies_list.txt' file. Run from the project folder,
+and accept the default settings when prompted.
 
-    python SEC-EDGAR-text --storage=/tmp/my_storage_folder
+    python SEC-EDGAR-text
 
-Download of a full history of key sections from 10-K and 10-Q filings for
-(most) US companies takes less than 40GB storage: around 1 million text
-excerpt files, plus a similar number of metadata files.
+*Typical usage* There are several arguments available to choose which
+companies download list ot use, which types of filings to download, where to
+save the extracted documents, multiprocessing option, download rate
+and so on. For example:
+
+    python SEC-EDGAR-text --storage=/path/to/my_storage_location --start=20150101 --end=99991231 --filings=10-K --multiprocessing_cores=8
+
+See module utils.py to see a full list of command line options.
+
+To download of a full history of key sections from 10-K and 10-Q filings
+for (most) US companies takes less than 40GB storage: around 1 million
+text excerpt files, plus a similar number of metadata files.
+
+
 
 
 ## Background

@@ -34,12 +34,12 @@ class Document(object):
         :param skip_existing_excerpts:
         :return:
         """
-        start_time = time.clock()
+        start_time = time.process_time()
         self.prepare_text()
-        prep_time = time.clock() - start_time
+        prep_time = time.process_time() - start_time
         file_name_root = metadata_master.metadata_file_name
         for section_search_terms in master_search_terms[form_type]:
-            start_time = time.clock()
+            start_time = time.process_time()
             metadata = copy.copy(metadata_master)
             warnings = []
             section_name = section_search_terms['itemname']
@@ -51,7 +51,7 @@ class Document(object):
             search_pairs = section_search_terms[self.search_terms_type()]
             text_extract, extraction_summary, start_text, end_text, warnings = \
                 self.extract_section(search_pairs)
-            time_elapsed = time.clock() - start_time
+            time_elapsed = time.process_time() - start_time
             # metadata.extraction_method = self.extraction_method
             metadata.section_name = section_name
             if start_text:
