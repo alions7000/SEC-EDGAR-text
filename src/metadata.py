@@ -53,6 +53,7 @@ class Metadata(object):
             while attempts < 5:
                 try:
                     ri = requests_get(index_url)
+                    logger.info('Status Code: ' + str(ri.status_code))
                     soup = BeautifulSoup(ri.text, 'html.parser')
                     # Parse the page to find metadata
                     form_type = soup.find('div', {'id': 'formHeader'}). \

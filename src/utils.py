@@ -251,13 +251,14 @@ def requests_get(url, params=None):
     import requests, random
     retries = 0
     success = False
+    hdr = {'user-agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.107 Mobile Safari/537.36'}
     while (not success) and (retries <= 20):
         # wait for an increasingly long time (up to a day) in case internet
         # connection is broken. Gives enough time to fix connection or SEC site
         try:
             # to test the timeout functionality, try loading this page:
             # http://httpstat.us/200?sleep=20000  (20 seconds delay before page loads)
-            r = requests.get(url, params=params, timeout = 10)
+            r = requests.get(url, headers=hdr, params=params, timeout=10)
             success = True
             # facility to add a pause to respect SEC EDGAR traffic limit
             # https://www.sec.gov/privacy.htm#security
