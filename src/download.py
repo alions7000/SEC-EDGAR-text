@@ -191,10 +191,10 @@ class EdgarCrawler(object):
                 doc_text = doc_search.group()
                 doc_metadata = copy.copy(filing_metadata)
                 # look for form type near the start of the document.
-                type_search = re.search("(?i)<TYPE>.*",
-                                        doc_text[0:10000])
+                type_search = re.search("<TYPE>.*",
+                                        doc_text[0:10000], re.IGNORECASE)
                 if type_search:
-                    document_type = re.sub("^(?i)<TYPE>", "", type_search.group())
+                    document_type = re.sub("^<TYPE>", "", type_search.group(), re.IGNORECASE)
                     document_type = re.sub(r"(-|/|\.)", "",
                                          document_type)  # remove hyphens etc
                 else:
@@ -212,18 +212,18 @@ class EdgarCrawler(object):
                 doc_metadata.metadata_file_name = local_path
 
                 # search for a <html>...</html> block in the DOCUMENT
-                html_search = re.search(r"<(?i)html>.*?</(?i)html>",
-                                        doc_text, re.DOTALL)
-                xbrl_search = re.search(r"<(?i)xbrl>.*?</(?i)xbrl>",
-                                        doc_text, re.DOTALL)
+                html_search = re.search(r"<html>.*?</html>",
+                                        doc_text, re.DOTALL | re.IGNORECASE)
+                xbrl_search = re.search(r"<xbrl>.*?</xbrl>",
+                                        doc_text, re.DOTALL | re.IGNORECASE)
                 # occasionally a (somewhat corrupted) filing includes a mixture
                 # of HTML-format documents, but some of them are enclosed in
                 # <TEXT>...</TEXT> tags and others in <HTML>...</HTML> tags.
                 # If the first <TEXT>-enclosed document is before the first
                 # <HTML> enclosed one, then we take that one instead of
                 # the block identified in html_search.
-                text_search = re.search(r"<(?i)text>.*?</(?i)text>",
-                                        doc_text, re.DOTALL)
+                text_search = re.search(r"<text>.*?</text>",
+                                        doc_text, re.DOTALL | re.IGNORECASE)
                 if text_search and html_search \
                         and text_search.start() < html_search.start() \
                         and html_search.start() > 5000:

@@ -46,7 +46,7 @@ companies download list ot use, which types of filings to download, where to
 save the extracted documents, multiprocessing option, download rate
 and so on. For example:
 
-    python SEC-EDGAR-text --storage=/path/to/my_storage_location --start=20150101 --end=99991231 --filings=10-K --multiprocessing_cores=8
+    python SEC-EDGAR-text --storage=/path/to/my_storage_location --start=20150101 --end=99991231 --filings=10-K --multiprocessing_cores=0 --traffic_limit_pause_ms=500
 
 See module utils.py to see a full list of command line options.
 
