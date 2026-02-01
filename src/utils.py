@@ -251,7 +251,8 @@ def requests_get(url, params=None):
     import requests, random
     retries = 0
     success = False
-    hdr = {'user-agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.107 Mobile Safari/537.36'}
+    hdr = {'user-agent': "SEC-EDGAR-text user (contact: researcher@institution.edu)"}
+    
     while (not success) and (retries <= 20):
         # wait for an increasingly long time (up to a day) in case internet
         # connection is broken. Gives enough time to fix connection or SEC site
